@@ -4,7 +4,7 @@ The latest pushed AnyPS5 source is commit `17f36dc3f6` on the fork branch, based
 
 | Library / area | Current metric | Remaining by this metric |
 |---|---:|---:|
-| Selected libraries combined | 2,959 / 4,240 (69.79%) | 1,281 |
+| Selected libraries combined (earlier subset scan) | 2,959 / 4,240 (69.79%) | 1,281 |
 | `libSceAgcDriver` | 97 / 167 | 70 |
 | `libSceSystemService` | 146 / 617 | 471 |
 | `libSceUserService` | 44 / 695 | 651 |
@@ -22,7 +22,7 @@ Other broad compatibility areas remain outside this checkpoint, including `libSc
 
 Names/NIDs and aggregate counters do not establish API ABI or semantics. Remaining functions should be prioritized from public behavioral documentation or focused synthetic tests; don't convert an unknown export into success-returning behavior without an oracle. See [BLOCKERS.md](BLOCKERS.md).
 
-The 15 newly covered gfx1013 forms are the DS_SRC2 64-bit operations; three scalar buffer store forms and 20 scalar buffer RMW forms are implemented. A separate uncommitted compare-swap change has targeted decoder, IR, and GPU tests. GDS source-2 behavior and F64 floating edge cases remain outside the verified subset.
+The 15 newly covered gfx1013 forms are the DS_SRC2 64-bit operations; three scalar buffer store forms and 26 scalar buffer atomic forms are implemented and tested across DWORD/X2 widths. GDS source-2 behavior and F64 floating edge cases remain outside the verified subset.
 
 ## Latest implemented shader slice
 
