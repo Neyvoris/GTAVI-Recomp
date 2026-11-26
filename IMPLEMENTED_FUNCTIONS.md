@@ -25,4 +25,10 @@
 - `execl`, `execle`, and `execlp` variadic entry points are present in `third_party/AnyPS5/core/libs/prx/libkernel/System/src/Process.cpp`, declarations in `Api.hpp`, from public AnyPS5 commit `65eaf885f894447d9782f439dcd93e07cdd1cffc` (included in the branch history before the current merge).
 - The earlier `guest_exec_variadic` targeted build and test passed; successful process replacement and console-specific variadic ABI are not verified.
 
+## DS_SRC2 64-bit LDS shader forms
+
+- `RdnaMemoryOpDecoder.cpp` now recognizes the gfx1013 DS_SRC2 U64/I64/F64 forms for add, sub, reverse-sub, inc/dec, signed/unsigned min/max, bitwise and/or/xor, write, and finite-value floating min/max. `MemoryInstructionDispatch.cpp` maps these to existing shared-memory 64-bit atomic IR operations; `SharedMemoryInstructions.cpp::dsSrc2U64` reads the second LDS operand at `offset1`, operates on the target at `offset0`, and honors exec masks and denormal-flush metadata.
+- GDS variants still throw explicitly because no GDS implementation or behavior oracle exists. Floating min/max GPU coverage currently uses finite non-NaN values; NaN payload/propagation, signed-zero ties, infinities, and denormals are not individually verified.
+- `agc_driver_lds_src2` executes all 15 opcodes and compares both result dwords for each of 32 lanes against scalar reference functions. It passed on NVIDIA RTX 4060 with `VK_LAYER_KHRONOS_validation` loaded. `ds_src2_u64` checks the generated IR operation mapping. The focused tests do not establish all possible edge-case semantics.
+
 Function-level completion claims require a behavior test and authoritative or synthetic expected results. Aggregate progress counters are not proof by themselves.
