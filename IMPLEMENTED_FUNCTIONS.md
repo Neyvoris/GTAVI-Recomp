@@ -38,10 +38,10 @@
 - `scalar_buffer_store` verifies decoder fields, width metadata, generated IR and active-lane guard. `agc_driver_sbuffer_store` executes all three widths on the RTX 4060 and verifies exact target and untouched buffer words. Both pass; runtime execution also passes under the Khronos Vulkan validation layer.
 - AnyPS5 commit `8774f2f9b9` (`feat(shader): translate scalar buffer stores`) is pushed to `Neyvoris/AnyPS5:codex/gtavi-compatibility-advance`. These tests cover aligned, in-bounds DWORD stores and do not claim all SMEM address modes or unusual EXEC masks.
 
-## Scalar buffer atomic add
+## Scalar buffer atomics
 
-- SMEM opcode `0x42` now decodes as `S_BUFFER_ATOMIC_ADD`. The translation reuses the existing `BufferAtomicIAdd32` Vulkan lowering, elects one active lane per wave, and broadcasts the returned old value when GLC is set. Without GLC, the operation does not write a return value to the SGPR.
-- `scalar_buffer_atomic_add` checks both GLC forms and IR lane guarding. `agc_driver_sbuffer_atomic_add` dispatches a 32-lane shader on RTX 4060, verifies the buffer was incremented once (not once per lane), and checks the returned pre-operation value by storing it to a second word. Both pass with Khronos validation enabled and no validation errors in the log.
-- AnyPS5 commit `b1acbb97cc` (`feat(shader): translate scalar buffer atomic add`) is pushed to the fork branch. Verified scope is 32-bit add, aligned in-bounds descriptor access, one wave, and GLC return/no-return; other atomic operators and multi-wave contention remain unverified.
+- SMEM opcodes `0x40` and `0x42–0x4a` now decode to scalar buffer SWAP, ADD, SUB, signed/unsigned MIN/MAX, AND, OR, and XOR. Translation maps to the existing Vulkan atomic IR, elects one active lane per wave, and broadcasts the old value when GLC is set.
+- `scalar_buffer_atomic_add` checks decoder metadata, IR operation mapping, and lane guarding for all ten opcodes and both GLC forms. `agc_driver_sbuffer_atomic_add` executes every case on RTX 4060, validates the resulting buffer word, and checks the old value through a following scalar store. Signed and unsigned min/max test values whose signed ordering differs. The focused suite passed with Khronos validation enabled and no VUID or validation errors.
+- AnyPS5 commit `9c0dfddfe1` (`feat(shader): translate scalar buffer atomic rmw`) is pushed to the fork branch. Verified scope is 32-bit operations, aligned in-bounds descriptor access, a single wave, and GLC return/no-return. Compare-swap, increment/decrement, 64-bit operations, and multi-wave contention remain unverified.
 
 Function-level completion claims require a behavior test and authoritative or synthetic expected results. Aggregate progress counters are not proof by themselves.
