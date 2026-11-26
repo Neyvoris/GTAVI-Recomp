@@ -1,5 +1,11 @@
 # Test results
 
+## 2026-11-26 follow-up
+
+- Fresh Release incremental build of `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` passed in `D:\a5adv3`, rebuilding shader recompiler, `libkernel.prx`, and `libSceAgcDriver.prx` dependencies.
+- Fresh focused CTest run passed 2/2: `agc_driver_sbuffer_atomic_add` (RTX 4060 Vulkan execution) and `scalar_buffer_atomic_add` (IR/decoder checks). These reconfirm the pushed `126087d9ea` scalar buffer/address atomic implementations; this run does not extend coverage to scratch stores or enable a newly confirmed Vulkan validation-layer run.
+- A `ctest -N` inspection found 7,114 registered tests in the existing build tree; most test executables are absent, so this was not a full-suite test run.
+
 Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `126087d9ea`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
 ## Targeted tests on merged source

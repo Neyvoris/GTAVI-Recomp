@@ -29,4 +29,6 @@ Updated: 2026-11-26.
 
 ## Reproduction
 
+- 2026-11-26 refresh: `ninja scalar_buffer_atomic_add_tests agc_driver_sbuffer_atomic_add_tests` completed successfully in `D:\a5adv3` after rebuilding 205 incremental steps (including kernel, shader recompiler, and AGC PRX). A GCC 16 STL `-Wstringop-overread` warning appeared during the existing `std::vector<std::byte>` comparison code; no build error resulted. `ctest --output-on-failure -R "^(scalar_buffer_atomic_add|agc_driver_sbuffer_atomic_add)$"` passed 2/2.
+
 The repo helper `scripts/build-anyps5-windows.ps1` configures and builds the full runtime, and now places `TMP`, `TEMP`, and MinGW `TMPDIR` under the selected build directory. This checkpoint's CMake build directory was `D:\a5adv3`; it completed all 413 patched PRX outputs before Windows Security blocked the AGC replay tool post-link step. The helper does not bypass that blocker.

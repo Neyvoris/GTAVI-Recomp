@@ -22,7 +22,7 @@ Other broad compatibility areas remain outside this checkpoint, including `libSc
 
 Names/NIDs and aggregate counters do not establish API ABI or semantics. Remaining functions should be prioritized from public behavioral documentation or focused synthetic tests; don't convert an unknown export into success-returning behavior without an oracle. See [BLOCKERS.md](BLOCKERS.md).
 
-The 15 newly covered gfx1013 forms are the DS_SRC2 64-bit operations; three scalar buffer store forms, three scalar raw-address store forms, 26 scalar buffer atomic forms, and all 26 scalar-address atomic forms are implemented and tested. The three remaining decoded-reference forms are scalar scratch-store DWORD/X2/X4. GDS source-2 behavior and F64 floating edge cases remain outside the verified subset.
+The 15 newly covered gfx1013 forms are the DS_SRC2 64-bit operations; three scalar buffer store forms, three scalar raw-address store forms, 26 scalar buffer atomic forms, and all 26 scalar-address atomic forms are implemented and tested. The three remaining decoded-reference forms are scalar scratch-store DWORD/X2/X4. The public ISA and LLVM opcode records were confirmed, but guest FLAT_SCRATCH/per-wave scalar scratch mapping is absent: the current Vulkan scratch pool is an internal per-invocation allocation and cannot safely be addressed using the guest SMEM base. GDS source-2 behavior and F64 floating edge cases remain outside the verified subset.
 
 ## Latest implemented shader slice
 

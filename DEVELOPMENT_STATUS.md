@@ -28,6 +28,9 @@ Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 9
 
 ## Evidence and limitations
 
+- Follow-up audit on 2026-11-26 confirmed the three remaining gfx1013 reference forms are `S_SCRATCH_STORE_DWORD/X2/X4` (SMEM `0x15–0x17`). The source currently has no guest `FLAT_SCRATCH`/scalar scratch base mapping; the Vulkan scratch pool is an internal per-invocation allocation. A raw BDA store or using `RdnaOperand.value` as a scale would be semantically wrong, so no decoder-only patch was retained. Public AMD RDNA2 ISA and LLVM GFX10 encoding were consulted; implementation remains blocked until guest scratch-address mapping is modeled.
+- Rebuilt `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` on 2026-11-26 in `D:\a5adv3`; Ninja completed the incremental build, including `libkernel.prx`, `shader_recompiler_agc_driver`, and `libSceAgcDriver.prx`. Focused tests passed 2/2. An existing GCC 16 STL `-Wstringop-overread` warning appeared in a library vector comparison; the build completed successfully.
+
 - Exact build and test evidence is in [BUILD_STATUS.md](BUILD_STATUS.md) and [TEST_RESULTS.md](TEST_RESULTS.md).
 - Remaining API and shader work is in [REMAINING_FUNCTIONS.md](REMAINING_FUNCTIONS.md); blockers and missing behavioral oracles are in [BLOCKERS.md](BLOCKERS.md).
 - Use only public source and synthetic/upstream tests. No leaked source, proprietary game files, console keys, or unauthorized game content were used. GTA VI compatibility is not established.
