@@ -76,6 +76,11 @@ Write-Host "Build directory: $buildDir"
 if ($LASTEXITCODE -ne 0) { throw 'AnyPS5 CMake configure failed.' }
 
 $buildLog = Join-Path $buildDir 'build.log'
+$buildTemp = Join-Path $buildDir 'tmp'
+New-Item -ItemType Directory -Force -Path $buildTemp | Out-Null
+$env:TMP = $buildTemp
+$env:TEMP = $buildTemp
+$env:TMPDIR = $buildTemp.Replace('\', '/')
 & $cmake --build $buildDir --parallel 12 2>&1 | Tee-Object -FilePath $buildLog
 $buildExitCode = $LASTEXITCODE
 if ($buildExitCode -ne 0) { throw "AnyPS5 build failed; see $buildLog" }

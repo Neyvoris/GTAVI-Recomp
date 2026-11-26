@@ -20,4 +20,4 @@ Updated: 2026-11-26.
 
 ## Reproduction
 
-The repo helper `scripts/build-anyps5-windows.ps1` configures and builds the full runtime; specify a D: build directory to avoid the previously observed full C: volume. This checkpoint's focused CMake build directory was `D:\a5adv3`. The full-runtime helper has not been rerun to completion on the merged source; consult test results for the earlier full-suite baseline and its failures.
+The repo helper `scripts/build-anyps5-windows.ps1` configures and builds the full runtime, and now places `TMP`, `TEMP`, and MinGW `TMPDIR` under the selected build directory. This checkpoint's CMake build directory was `D:\a5adv3`; it completed all 413 patched PRX outputs before Windows Security blocked the AGC replay tool post-link step. The helper does not bypass that blocker.
