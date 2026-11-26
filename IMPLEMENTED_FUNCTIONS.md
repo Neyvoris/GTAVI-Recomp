@@ -31,7 +31,7 @@
 - GDS source-2 instructions now use the existing M0-base address mapping and GDS memory resource. `agc_driver_gds_m0_base` executes `ds_add_src2_u32` and `ds_add_src2_u64` with 32 active lanes, verifies exact final words, and checks untouched neighboring words. The 64-bit floating GDS min/max path remains explicitly rejected. GPU coverage currently establishes ADD at U32/U64, not every GDS source-2 opcode.
 - Floating min/max GPU coverage currently uses finite non-NaN LDS values; NaN payload/propagation, signed-zero ties, infinities, and denormals are not individually verified.
 - `agc_driver_lds_src2` executes all 15 opcodes and compares both result dwords for each of 32 lanes against scalar reference functions. `ds_src2_u64` checks the generated IR operation mapping. The focused tests do not establish all possible edge-case semantics.
-- Commit `7d69cb0e68519660a3842134ac7f2dcb6ad03976` adds GDS source-2 translation and U32/U64 GPU checks. `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, and `ds_src2_u64` passed 3/3 on RTX 4060; validation-layer loading was not confirmed for this run.
+- Commit `7d69cb0e68519660a3842134ac7f2dcb6ad03976` adds GDS source-2 translation and U32/U64 GPU checks. `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, and `ds_src2_u64` passed 3/3 on RTX 4060. A separate rerun of the GDS execution test confirmed `VK_LAYER_KHRONOS_validation` was loaded and reported no VUID or validation errors.
 
 ## Scalar buffer stores
 
