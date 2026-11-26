@@ -9,8 +9,9 @@ Updated: 2026-11-26.
 - Generator: Ninja 1.13.2; CMake 4.4.4.
 - Release build directory: `D:\GTAVI-Recomp-build\a5-msys2-ucrt` (move to D: after the C: volume filled during the initial attempt).
 - Configure: full runtime (`ANYPS5_RELINKER_ONLY=OFF`), tests on, bundled dependencies, SPIRV-Tools on. `SKIP_SPIRV_TOOLS_INSTALL=ON` avoids a CMake export-set failure caused by the global `windows_seh_personalities` link target; no dependency source was changed.
-- Build result: in progress with Ninja keep-going after Windows Security quarantined `agc_shader_replay.exe`; see `TEST_RESULTS.md`.
+- Build result: PARTIAL/FAILED. Ninja keep-going completed independent work; 413 PRX artifacts were produced. 37 AGC tool/test executable targets failed post-link after Windows Security quarantined generated `.exe` files, causing `objcopy` to report `Invalid argument`. Security settings were not modified. See `TEST_RESULTS.md`.
 - Validation-enabled configure/build/test recipe: `scripts/build-anyps5-windows.ps1` (`Release` or `Debug`). Use `-BuildDirectory D:\...` when the repository volume has limited free space.
+- Debug build: NOT RUN.
 
 ## Parent repository baseline
 
