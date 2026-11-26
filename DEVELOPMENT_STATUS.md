@@ -19,3 +19,10 @@ Development uses public source and synthetic/upstream tests only. No game files,
 AnyPS5 source changes are committed to the user-owned fork. The parent `.gitmodules` URL and gitlink now point to the fork and tested commit on this branch.
 
 See [BUILD_STATUS.md](BUILD_STATUS.md), [TEST_RESULTS.md](TEST_RESULTS.md), and [BLOCKERS.md](BLOCKERS.md) for current evidence.
+
+## Follow-up compatibility audit (2026-11-26)
+
+- Revalidated the D: development copy at parent commit `168ddb3b7983206b08062fc70d4cd1f1790f6bc3` and AnyPS5 pin `97919d82f8456c70bcb7b739b9d418d8c375bba7`; both working trees were clean before this note. C: remains at 0 bytes free, so new build work must use D:.
+- Re-examined the decoded but untranslated `S_SCRATCH_LOAD_DWORD`, `...X2`, and `...X4` forms. Upstream AnyPS5 history added a lowering and subsequently reverted it because wave/lane scratch mapping was unresolved. The existing `ScalarScratchLoad.cpp` verifies decoding only and expects translation to throw. The RDNA 2 ISA describes per-thread scratch swizzling; LLVM documents lane-interleaved private backing storage. No semantic implementation or compatibility count is claimed from the current evidence.
+- Re-audited AGC and service-library stubs: names/NIDs without confirmed argument ABI and behavior are insufficient for a valid implementation. Sequential rerun of three previously aggregate-failing shader-preparation tests passed 3/3; cause of aggregate failures remains unverified.
+- No source implementation or new commit was made during this audit. The next code change must have a test oracle that checks behavior, not merely successful translation or export resolution. Details are in [BLOCKERS.md](BLOCKERS.md).
