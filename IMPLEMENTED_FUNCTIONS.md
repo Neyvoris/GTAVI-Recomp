@@ -11,4 +11,12 @@
 
 - `scripts/build-anyps5-windows.ps1`: reproducible Windows x64 configure/build/CTest entry point for the full AnyPS5 runtime, recursively initializes the pinned submodules, and enables SPIR-V validation/tests.
 
+## Shader and graphics work in the pinned AnyPS5 branch
+
+- `12d719db7f`: implemented packed MIMG PCK2/PCK4 image stores and mip variants. Execution tests cover stored texels, mip selection, guards, and rejected inputs.
+- `bd1983813`: implemented 64-bit LDS `DS_SRC2` operations.
+- `8774f2f9b` through `126087d9e`: implemented scalar buffer stores/atomics and scalar-address stores/atomics, with focused translation and AGC execution tests.
+- `7d69cb0e6`: implemented GDS `DS_SRC2` U32/U64 atomic-add forms using the M0 base.
+- Current focused validation rebuilt the relevant tests and passed 14/14 (see `TEST_RESULTS.md`). These changes improve particular tested paths; they do not establish complete shader coverage or full AGC compatibility.
+
 Function-level compatibility claims require a source patch, a semantic test, and recorded passing results.

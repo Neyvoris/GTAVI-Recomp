@@ -2,6 +2,12 @@
 
 Updated: 2026-11-26. This file records only observed results.
 
+## Focused compatibility additions on `7d69cb0e68519660a3842134ac7f2dcb6ad03976`
+
+- Built the focused Release test targets in `D:\a5adv3`: `agc_driver_gcn_scalar_buffer_base_tests`, `agc_driver_gds_m0_base_tests`, `agc_driver_lds_src2_tests`, `agc_driver_sbuffer_atomic_add_tests`, `agc_driver_sbuffer_store_tests`, `agc_driver_scalar_buffer_runtime_word3_tests`, `scalar_buffer_atomic_add_tests`, `scalar_buffer_store_tests`, `agc_driver_image_table_packed_tests`, `image_pck_n_tests`, and `ds_src2_u64_tests`.
+- CTest PASS 14/14: `agc_driver_gcn_scalar_buffer_base`, `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, `agc_driver_sbuffer_atomic_add`, `agc_driver_sbuffer_store`, `agc_driver_scalar_buffer_runtime_word3`, `agc_driver_image_table_packed_stores`, `agc_driver_image_table_packed_guards`, `agc_driver_image_table_packed_rejected`, `agc_driver_image_table_packed_mips`, `ds_src2_u64`, `image_pck_n`, `scalar_buffer_atomic_add`, and `scalar_buffer_store`.
+- These tests exercise specific operations locally through Vulkan and synthetic shader translation fixtures. They do not verify every instruction variant or title runtime.
+
 ## Parent repository baseline
 
 - `cmd /c scripts\build-windows.bat Release`: PASS; all 3 CTest tests.
