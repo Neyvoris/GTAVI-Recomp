@@ -4,12 +4,12 @@ Updated: 2026-11-26.
 
 ## Full AnyPS5 Windows x64 runtime
 
-- Source: `third_party/AnyPS5` at `15826135019b8c7de27f42661a850a1dd9750932`.
+- Source: `third_party/AnyPS5` at `97919d82f8456c70bcb7b739b9d418d8c375bba7` (base pin `15826135019b8c7de27f42661a850a1dd9750932` plus the isolated libkernel change).
 - Compiler: MSYS2 UCRT64 MinGW-w64 GCC/G++ 16.1.0, target `x86_64-w64-mingw32`; CMake feature checks accepted the required Windows SEH and shared-pointer atomic support.
 - Generator: Ninja 1.13.2; CMake 4.4.4.
 - Release build directory: `D:\GTAVI-Recomp-build\a5-msys2-ucrt` (move to D: after the C: volume filled during the initial attempt).
 - Configure: full runtime (`ANYPS5_RELINKER_ONLY=OFF`), tests on, bundled dependencies, SPIRV-Tools on. `SKIP_SPIRV_TOOLS_INSTALL=ON` avoids a CMake export-set failure caused by the global `windows_seh_personalities` link target; no dependency source was changed.
-- Build result: in progress; see `TEST_RESULTS.md` before relying on results.
+- Build result: in progress with Ninja keep-going after Windows Security quarantined `agc_shader_replay.exe`; see `TEST_RESULTS.md`.
 - Validation-enabled configure/build/test recipe: `scripts/build-anyps5-windows.ps1` (`Release` or `Debug`). Use `-BuildDirectory D:\...` when the repository volume has limited free space.
 
 ## Parent repository baseline

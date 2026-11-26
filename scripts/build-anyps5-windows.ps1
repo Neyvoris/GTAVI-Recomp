@@ -47,6 +47,7 @@ $gxx = Find-Tool 'g++.exe' $gxxCandidates
 $MinGWBin = Split-Path -Parent $gxx
 $env:PATH = "$MinGWBin;$env:PATH"
 $cmake = Find-Tool 'cmake.exe' @('C:\Program Files\CMake\bin\cmake.exe')
+$ctest = Find-Tool 'ctest.exe' @((Join-Path (Split-Path -Parent $cmake) 'ctest.exe'))
 $ninja = Find-Tool 'ninja.exe' @(
     'C:\Users\ivano\AppData\Local\Microsoft\WinGet\Packages\Ninja-build.Ninja_Microsoft.Winget.Source_8wekyb3d8bbwe\ninja.exe'
 )
@@ -74,10 +75,14 @@ Write-Host "Build directory: $buildDir"
     -DANYPS5_ENABLE_SPIRV_TOOLS=ON
 if ($LASTEXITCODE -ne 0) { throw 'AnyPS5 CMake configure failed.' }
 
-& $cmake --build $buildDir --parallel
-if ($LASTEXITCODE -ne 0) { throw 'AnyPS5 build failed.' }
+$buildLog = Join-Path $buildDir 'build.log'
+& $cmake --build $buildDir --parallel 12 2>&1 | Tee-Object -FilePath $buildLog
+$buildExitCode = $LASTEXITCODE
+if ($buildExitCode -ne 0) { throw "AnyPS5 build failed; see $buildLog" }
 
-& $cmake -E env "PATH=$((Split-Path -Parent $gcc));$env:PATH" ctest --test-dir $buildDir --output-on-failure --no-tests=error --parallel
-if ($LASTEXITCODE -ne 0) { throw 'AnyPS5 CTest run failed.' }
+$testLog = Join-Path $buildDir 'ctest.log'
+& $cmake -E env "PATH=$((Split-Path -Parent $gcc));$env:PATH" $ctest --test-dir $buildDir --output-on-failure --no-tests=error --parallel 12 2>&1 | Tee-Object -FilePath $testLog
+$testExitCode = $LASTEXITCODE
+if ($testExitCode -ne 0) { throw "AnyPS5 CTest run failed; see $testLog" }
 
 Write-Host "PASS: AnyPS5 $Configuration runtime build and registered tests."
