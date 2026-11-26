@@ -1,24 +1,23 @@
 # Test results
 
-Updated: 2026-11-26. This file records only observed results.
+Updated: 2026-11-26. Results below were observed on AnyPS5 merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
-## Parent repository baseline
+## Targeted tests on merged source
 
-- `cmd /c scripts\build-windows.bat Release`: PASS; all 3 CTest tests.
-- `python scripts/update_progress.py --check`: PASS.
-- `python -m unittest discover -s tests/python -v`: PASS, 44 tests.
-- `python -I tests/test_check_app0.py`: PASS, 10 synthetic fixture tests.
+- Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.
+- System/service tests: PASS 43/43 — `guest_system_service|guest_sysmodule|guest_user_service`, including bounded path/profile cases, title metadata, lifecycle, login-list, and invalid sysmodule IDs.
+- AGC/Vulkan execution: PASS 2/2 — `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`.
+- Repeated the two AGC tests with `VK_LAYER_KHRONOS_validation` set in the process environment: PASS 2/2.
+- Aggregate selected result: 48/48 tests passed. No homebrew/title runtime tests were run.
+- Debug configuration: selected recompiler/AGC and six PRX targets built; shader trio `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, and `scalar_scratch_load` passed 3/3. Full Debug CTest was not run.
 
-## AnyPS5 full runtime on MinGW
+## Earlier full-suite baseline (older AnyPS5 revision)
 
-- First configure: PASS for Release with tests on and full runtime enabled.
-- First build: FAILED at 8,175/11,731 Ninja steps with `ld.exe: final link failed: No space left on device`; C: had zero free space. The generated build directory was moved to D:.
-- Validation-enabled configure: PASS at `D:\GTAVI-Recomp-build\a5-msys2-ucrt` with `ANYPS5_ENABLE_SPIRV_TOOLS=ON`, `SKIP_SPIRV_TOOLS_INSTALL=ON`, tests on, and full runtime enabled. Without `SKIP_SPIRV_TOOLS_INSTALL`, CMake generation failed because an exported SPIRV-Tools target depends on AnyPS5's global `windows_seh_personalities` object target.
-- Keep-going build finished with 37 AGC executable targets failing after generated binaries were quarantined by Windows Security; 413 PRX library artifacts were produced. Full runtime build is not clean.
-- Targeted runtime build: PASS; `guest_exec_variadic_tests.exe` compiled and linked from AnyPS5 commit `97919d82f8456c70bcb7b739b9d418d8c375bba7`.
-- Targeted CTest: PASS, `ctest -R ^guest_exec_variadic$` (1/1).
-- Full CTest: all 6,651 registered tests completed in 1,284.23 seconds; 6,492 passed, 122 failed, and 37 were skipped. Failures include missing/quarantined AGC executables (`BAD_COMMAND`/`Not Run`) and independent failures such as shader-cache source checks, `pr_overlap_tools`, `performance_bisect`, `conventions_doc_links`, `title_run`, `test_executable_manifests` (timeout), `nid_patch_dependencies`, `test_thread_local_destructors`, and several AGC runtime checks. Full log: `D:\GTAVI-Recomp-build\a5-msys2-ucrt\ctest-full-dtemp.log`; CTest failure index: `D:\GTAVI-Recomp-build\a5-msys2-ucrt\Testing\Temporary\LastTestsFailed.log`.
-- Focused Vulkan validation run: PASS, 3/3: `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`, and `guest_video_out_vblank_status`. Explicit `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` was verified in loader debug output for the interpolation test; it selected NVIDIA GeForce RTX 4060. Interpolation test matched 932 pixels for wave32 and wave64 cases. No validation error/VUID was present in that smoke output. This was not a full-rendering or app-start test.
-- Vulkan setup: `vulkaninfo --summary` detected NVIDIA RTX 4060, driver 617.14; `spirv-val.exe --version` passed.
-- Debug build: NOT RUN.
-- Homebrew, GTA VI, game runtime, and first rendered frame: NOT TESTED. The 37 skipped tests are reported as skipped; none are counted as passes.
+- Full CTest: 6,651 registered tests; 6,492 passed, 122 failed, 37 skipped. This is not the current merged-source result and was not rerun after merging `main`.
+- Failures included unavailable/quarantined AGC executables and independent upstream checks. Earlier full build produced 413 PRX artifacts but was not clean; Windows Security quarantined some generated AGC executables before post-link `objcopy`.
+- Earlier three Vulkan validation cases (`agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`, `guest_video_out_vblank_status`) passed on NVIDIA RTX 4060. The two AGC cases have now been reconfirmed on the merged source with validation enabled; video-out case was not repeated.
+- `guest_exec_variadic` passed on the prior isolated branch before this merge; it was not repeated in this targeted run.
+
+## Limits
+
+Build success, unit-test success, and application runtime compatibility are separate claims. Full build, full CTest on the merged source, Debug, guest executable loading, homebrew, GTA VI, and first rendered frame remain unverified.

@@ -1,28 +1,22 @@
 # Development status
 
-Updated: 2026-11-26. Work is on `codex/windows-x64-preflight`, isolated from upstream.
+Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch: `codex/gtavi-compatibility-advance`.
 
-## Current phase
+## Current checkpoint
 
-- GTAVI-Recomp baseline recorded at parent commit `0b332f88343b0fdebf20a640a5c625a2132a521b`; audit note commit `196d39a59a522503dcc7032460e692c101cdd6c7` is on this branch.
-- Base AnyPS5 pin: `15826135019b8c7de27f42661a850a1dd9750932`, GPL-2.0-only. User-owned fork: `Neyvoris/AnyPS5`, development branch `codex/gtavi-libkernel-exec-variadic`, commit `97919d82f8456c70bcb7b739b9d418d8c375bba7`.
-- Windows x64 MinGW-w64/UCRT64 GCC 16.1.0 full-runtime Release build with tests enabled reached the end of the keep-going pass in `D:\GTAVI-Recomp-build\a5-msys2-ucrt`. 413 PRX library artifacts were produced, but 37 AGC tool/test executable targets failed post-link because Windows Security quarantined their output. This is a partial build, not a successful complete runtime build. The first attempt on C: ran out of disk space; generated build outputs were moved to D:.
-- Current configuration has `ANYPS5_RELINKER_ONLY=OFF`, `BUILD_TESTING=ON`, `ANYPS5_USE_SYSTEM_DEPS=OFF`, `ANYPS5_ENABLE_SPIRV_TOOLS=ON`, and `SKIP_SPIRV_TOOLS_INSTALL=ON`. The last option avoids exporting the bundled static tools, which otherwise exposed the globally linked `windows_seh_personalities` target during CMake generation.
-- A reproducible configure/build/test entry point is available at `scripts/build-anyps5-windows.ps1`.
-- Implemented `execl`, `execle`, and `execlp` from public AnyPS5 commit `65eaf885f894447d9782f439dcd93e07cdd1cffc`; the Windows x64 targeted build and `guest_exec_variadic` test pass. This test covers varargs beyond register slots and `ENOENT`/`E2BIG`, not successful process replacement.
-- Full CTest completed: 6,651 registered tests, 6,492 passed, 122 failed, and 37 were skipped. Failures include missing/quarantined AGC executables plus other independent upstream test failures; see `TEST_RESULTS.md` and the saved log outside the repository. A focused Vulkan validation smoke run passed three tests on the RTX 4060.
+- Integrated public `Neyvoris/AnyPS5` `main` into the isolated AnyPS5 fork branch. Merge commit: `dd95a75a55` (full source commit recorded in Git). The upstream repository was not modified and nothing was pushed.
+- Windows x64 Release configuration with MinGW-w64 GCC 16.1, CMake/Ninja, Vulkan SDK and SPIRV-Tools completed in `D:\a5adv3`. The selected runtime targets built, including `shader_recompiler_agc_driver`, `libSceAgcDriver.prx`, `libSceSystemService.prx`, `libSceUserService.prx`, `libSceSaveData.prx`, `libSceAppContent.prx`, and `libSceSysmodule.prx`.
+- 48 focused tests passed: three shader recompiler tests, 43 SystemService/UserService/Sysmodule tests, and two AGC Vulkan execution tests. The two AGC tests also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Debug configuration, homebrew execution, GTA VI, and first-frame rendering were not tested.
 
-## Scope and evidence
+## Coverage snapshot
 
-Development uses public source and synthetic/upstream tests only. No game files, console files, keys, leaked materials, or proprietary SDKs were accessed. GTA VI compatibility and game runtime are not verified.
+`tools/progress.py` on the tested AnyPS5 source reported 2,959/4,240 for the selected library counters (69.79%); 1,484/1,560 gfx1013 reference forms decoded and translated (95.13%); 1,460/1,460 scanned shader forms decoded; and 127 unsupported shader recompiler throw sites. The throw-site count and form count measure different things.
 
-AnyPS5 source changes are committed to the user-owned fork. The parent `.gitmodules` URL and gitlink now point to the fork and tested commit on this branch.
+Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 97/167; `libSceAppContent` 30/39; `libSceSaveData` 1/19; `libSceSysmodule` 13/21; `libSceSystemService` 146/617; `libSceUserService` 44/695. These are repository progress metrics, not application compatibility percentages.
 
-See [BUILD_STATUS.md](BUILD_STATUS.md), [TEST_RESULTS.md](TEST_RESULTS.md), and [BLOCKERS.md](BLOCKERS.md) for current evidence.
+## Evidence and limitations
 
-## Follow-up compatibility audit (2026-11-26)
-
-- Revalidated the D: development copy at parent commit `168ddb3b7983206b08062fc70d4cd1f1790f6bc3` and AnyPS5 pin `97919d82f8456c70bcb7b739b9d418d8c375bba7`; both working trees were clean before this note. C: remains at 0 bytes free, so new build work must use D:.
-- Re-examined the decoded but untranslated `S_SCRATCH_LOAD_DWORD`, `...X2`, and `...X4` forms. Upstream AnyPS5 history added a lowering and subsequently reverted it because wave/lane scratch mapping was unresolved. The existing `ScalarScratchLoad.cpp` verifies decoding only and expects translation to throw. The RDNA 2 ISA describes per-thread scratch swizzling; LLVM documents lane-interleaved private backing storage. No semantic implementation or compatibility count is claimed from the current evidence.
-- Re-audited AGC and service-library stubs: names/NIDs without confirmed argument ABI and behavior are insufficient for a valid implementation. Sequential rerun of three previously aggregate-failing shader-preparation tests passed 3/3; cause of aggregate failures remains unverified.
-- No source implementation or new commit was made during this audit. The next code change must have a test oracle that checks behavior, not merely successful translation or export resolution. Details are in [BLOCKERS.md](BLOCKERS.md).
+- Exact build and test evidence is in [BUILD_STATUS.md](BUILD_STATUS.md) and [TEST_RESULTS.md](TEST_RESULTS.md).
+- Remaining API and shader work is in [REMAINING_FUNCTIONS.md](REMAINING_FUNCTIONS.md); blockers and missing behavioral oracles are in [BLOCKERS.md](BLOCKERS.md).
+- Use only public source and synthetic/upstream tests. No leaked source, proprietary game files, console keys, or unauthorized game content were used. GTA VI compatibility is not established.

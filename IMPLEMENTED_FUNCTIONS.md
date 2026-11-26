@@ -1,14 +1,20 @@
-# Implemented functions
+# Implemented functions and verified work
 
-## libkernel
+## AnyPS5 integration
 
-- Added `execl_nid_postfix`, `execle_nid_postfix`, and `execlp_nid_postfix` in `third_party/AnyPS5/core/libs/prx/libkernel/System/src/Process.cpp`, with declarations in `Api.hpp`.
-- The Windows path reads the guest System V variadic argument list, including arguments beyond register slots, then forwards to existing `execv`/`execve`/`execvp` paths.
-- Backported from public commit `65eaf885f894447d9782f439dcd93e07cdd1cffc`; committed to `Neyvoris/AnyPS5:codex/gtavi-libkernel-exec-variadic` as `97919d82f8456c70bcb7b739b9d418d8c375bba7`.
-- Verified: targeted Windows x64 build and CTest `guest_exec_variadic` passed. The test covers ABI register/stack varargs, environment-list handling, and `ENOENT`/`E2BIG`. Successful process replacement and console variadic ABI behavior remain unverified.
+- Merged the public AnyPS5 `main` branch into the user-owned fork's isolated branch `codex/gtavi-compatibility-advance`; merge commit `dd95a75a55`. This brings the public upstream changes to libSceAgcDriver/AGC, shader recompiler, system libraries, build tooling, and tests into the fork branch. It does not claim every export/path is complete.
+- The merge commit itself is the exact source change boundary. Review the source history and test files with `git show --stat dd95a75a55` in `third_party/AnyPS5`.
 
-## Development tooling delivered
+## Windows x64 build evidence
 
-- `scripts/build-anyps5-windows.ps1`: reproducible Windows x64 configure/build/CTest entry point for the full AnyPS5 runtime, recursively initializes the pinned submodules, and enables SPIR-V validation/tests.
+- Configured full-runtime mode with tests enabled, SPIRV-Tools enabled, and bundled dependencies using MSYS2 UCRT64 MinGW-w64 GCC 16.1, CMake 4.4.4, Ninja, and Vulkan SDK 1.4.363.0.
+- Successfully built the shader recompiler/AGC driver target and PRX targets for `libSceAgcDriver`, `libSceSystemService`, `libSceUserService`, `libSceSaveData`, `libSceAppContent`, and `libSceSysmodule`.
+- Semantic tests passed for shader overwrite proof, memory decoder tolerance, scalar scratch-load unsupported behavior, SystemService, UserService, Sysmodule, AGC pipelined fill, and pixel execution interpolation. The AGC cases also passed with the Khronos Vulkan validation layer loaded.
+- Targeted test/build means those code paths compile and their listed assertions pass. It does not establish console ABI equivalence, general Vulkan correctness, or guest-app compatibility.
 
-Function-level compatibility claims require a source patch, a semantic test, and recorded passing results.
+## Previous isolated libkernel work
+
+- `execl`, `execle`, and `execlp` variadic entry points are present in `third_party/AnyPS5/core/libs/prx/libkernel/System/src/Process.cpp`, declarations in `Api.hpp`, from public AnyPS5 commit `65eaf885f894447d9782f439dcd93e07cdd1cffc` (included in the branch history before the current merge).
+- The earlier `guest_exec_variadic` targeted build and test passed; successful process replacement and console-specific variadic ABI are not verified.
+
+Function-level completion claims require a behavior test and authoritative or synthetic expected results. Aggregate progress counters are not proof by themselves.

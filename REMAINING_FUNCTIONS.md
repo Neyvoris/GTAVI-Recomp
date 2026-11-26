@@ -1,13 +1,23 @@
 # Remaining functions and implementation work
 
-Further AnyPS5 compatibility work remains. Existing debt figures below come from the project's documented audit, not from GTA VI imports or measured application compatibility:
+The tested AnyPS5 source is the fork branch at merge `dd95a75a55`. The current progress scan (`tools/progress.py`, restricted to the named libraries) reports:
 
-- `libSceAgcDriver`: 97 of 167 functions declared implemented; 312 documented behavior-gap entries.
-- `libSceVideoOut`: 78 of 290.
-- `libSceAudioOut`: 78 of 219.
-- `libScePad`: 56 of 222.
-- gfx1013 reference shader forms: 1,484 of 1,560 decoded; 126 unsupported recompiler paths (these are separate project metrics and should not be summed).
+| Library / area | Current metric | Remaining by this metric |
+|---|---:|---:|
+| Selected libraries combined | 2,959 / 4,240 (69.79%) | 1,281 |
+| `libSceAgcDriver` | 97 / 167 | 70 |
+| `libSceSystemService` | 146 / 617 | 471 |
+| `libSceUserService` | 44 / 695 | 651 |
+| `libSceSaveData` | 1 / 19 | 18 |
+| `libSceAppContent` | 30 / 39 | 9 |
+| `libSceSysmodule` | 13 / 21 | 8 |
+| `libkernel` | 754 / 800 | 46 |
+| `libc` | 1,874 / 1,882 | 8 |
+| gfx1013 reference forms | 1,484 / 1,560 | 76 |
+| Shader throw sites | 127 | 127 still marked unsupported |
 
-These figures do not identify which missing behavior is needed by an application. A code change needs an authoritative public behavioral source or a synthetic upstream test oracle. The validation-enabled shader/AGC build is partial because of the Windows Security quarantine block; `scripts/build-anyps5-windows.ps1` enables those tests.
+The scanned shader forms are 1,460/1,460 decoded. The instruction-form inventory, decoded-form inventory, and throw-site count have different denominators and must not be added or treated as interchangeable.
 
-The `execl` family test does not cover successful process replacement. Runtime execution of homebrew and actual title imports remain unverified. No unknown or untested API is marked complete. Full CTest had 122 failures and 37 skipped tests; many AGC failures were unlaunchable binaries after Windows Security quarantine, while additional upstream checks failed independently. Consult `TEST_RESULTS.md` before treating the baseline suite as green. See `BLOCKERS.md` for source-boundary and runtime constraints.
+Other broad compatibility areas remain outside this checkpoint, including `libSceVideoOut` (78/290), `libSceAudioOut` (78/219), and `libScePad` (56/222) in the prior audit. No full execution of a legally available PS5 homebrew app or correct rendered first frame was achieved.
+
+Names/NIDs and aggregate counters do not establish API ABI or semantics. Remaining functions should be prioritized from public behavioral documentation or focused synthetic tests; don't convert an unknown export into success-returning behavior without an oracle. See [BLOCKERS.md](BLOCKERS.md).
