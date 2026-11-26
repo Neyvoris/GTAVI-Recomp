@@ -9,6 +9,7 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 - Windows x64 Release configuration with MinGW-w64 GCC 16.1, CMake/Ninja, Vulkan SDK and SPIRV-Tools completed in `D:\a5adv3`. The selected runtime targets built, including `shader_recompiler_agc_driver`, `libSceAgcDriver.prx`, `libSceSystemService.prx`, `libSceUserService.prx`, `libSceSaveData.prx`, `libSceAppContent.prx`, and `libSceSysmodule.prx`.
 - Implemented and GPU-verified MIMG `IMAGE_STORE_PCK2/PCK4` and mip variants for the measured 2D, single-dword, identity-swizzled R8/R16/RG8 subset; PCK4 is limited to R8. Coverage and boundaries are described in `IMPLEMENTED_FUNCTIONS.md`.
 - 96 focused Release tests passed on the current worktree, including shader, service, AppContent, SaveData, AGC, and PCK tests. The PCK GPU test and IR decoder test also passed in Debug. PCK execution passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- Full Release build was attempted but stopped at the `agc_shader_replay.exe` post-link step because Windows Security marks that generated tool as `Trojan:Win64/ShellCode.MKA!MTB` and blocks `objcopy`; all 413 patched PRX output paths existed at the stop (408 were refreshed during the attempt). The precise blocker is recorded in `BUILD_STATUS.md` and `BLOCKERS.md`.
 - This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Homebrew execution, GTA VI, and first-frame rendering were not tested.
 
 ## Coverage snapshot

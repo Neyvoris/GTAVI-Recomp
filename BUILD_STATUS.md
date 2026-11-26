@@ -16,6 +16,7 @@ Updated: 2026-11-26.
 - This was a targeted build, not a clean all-target build. Third-party glslang/STL warnings appeared, but selected targets linked successfully.
 - Debug configuration succeeded at `D:\a5advdbg`. The same shader recompiler/AGC target, six selected PRX libraries, and three shader test executables built successfully; rerunning Ninja confirmed exit code 0. Debug CTest for the three shader tests passed 3/3. This is still targeted, not a full Debug build.
 - After the packed-store changes, the focused Debug `agc_driver_image_pck_n_tests` and `image_pck_n_tests` targets built and passed 2/2. C: had no free space for MinGW's default temporary output; setting `TMP`, `TEMP`, and `TMPDIR` to `D:\a5temp\mingw-temp` allowed this targeted build to complete. The full Debug build remains unverified.
+- A complete Release `ninja` build was attempted (`11,086` planned operations). It stopped at the AGC tool post-link step for `agc_shader_replay.exe`: Windows Security identifies it as `Trojan:Win64/ShellCode.MKA!MTB` (ThreatID `2147960850`) and blocks reads, so GNU `objcopy` reports `Invalid argument`. The alert is reproduced in Defender's read-only threat history. No protection settings were changed. At the stop, all 413 patched `.prx` output paths existed; 408 had been written during this build attempt and five predated it. The complete all-target build did not finish.
 
 ## Reproduction
 
