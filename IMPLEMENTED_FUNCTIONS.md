@@ -31,4 +31,11 @@
 - GDS variants still throw explicitly because no GDS implementation or behavior oracle exists. Floating min/max GPU coverage currently uses finite non-NaN values; NaN payload/propagation, signed-zero ties, infinities, and denormals are not individually verified.
 - `agc_driver_lds_src2` executes all 15 opcodes and compares both result dwords for each of 32 lanes against scalar reference functions. It passed on NVIDIA RTX 4060 with `VK_LAYER_KHRONOS_validation` loaded. `ds_src2_u64` checks the generated IR operation mapping. The focused tests do not establish all possible edge-case semantics.
 
+## Scalar buffer stores
+
+- The SMEM decoder recognizes scalar buffer store opcodes `0x18`, `0x19`, and `0x1a` as DWORD, DWORDX2, and DWORDX4. Descriptor base validation now requires four SGPRs for scalar buffer load/store descriptors; other scalar address forms retain pair validation.
+- `TranslationContext::sBufferStore` emits a buffer write with the decoded immediate offset, dynamic scalar offset, coherence metadata, and component width. It elects one active lane with `ReadFirstLane` and the EXEC mask to avoid duplicate wave-wide writes.
+- `scalar_buffer_store` verifies decoder fields, width metadata, generated IR and active-lane guard. `agc_driver_sbuffer_store` executes all three widths on the RTX 4060 and verifies exact target and untouched buffer words. Both pass; runtime execution also passes under the Khronos Vulkan validation layer.
+- AnyPS5 commit `8774f2f9b9` (`feat(shader): translate scalar buffer stores`) is pushed to `Neyvoris/AnyPS5:codex/gtavi-compatibility-advance`. These tests cover aligned, in-bounds DWORD stores and do not claim all SMEM address modes or unusual EXEC masks.
+
 Function-level completion claims require a behavior test and authoritative or synthetic expected results. Aggregate progress counters are not proof by themselves.
