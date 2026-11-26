@@ -12,13 +12,15 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 - Committed and pushed the DS_SRC2 implementation to `Neyvoris/AnyPS5` branch `codex/gtavi-compatibility-advance`: `bd1983813d30ea8b9bdcd0c43d1096b853992a44`.
 - Added scalar `S_BUFFER_STORE_DWORD`, `S_BUFFER_STORE_DWORDX2`, and `S_BUFFER_STORE_DWORDX4` decoding and translation, with four-word descriptor validation and first-active-lane write election. Commit `8774f2f9b9` is pushed to the AnyPS5 fork branch. IR tests and RTX 4060 Vulkan execution validate exact buffer contents for all widths.
 - Focused scalar store, buffer descriptor runtime, and decoder-tolerance tests pass 4/4 in Release. Vulkan execution was run with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- Added `S_BUFFER_ATOMIC_ADD` opcode `0x42` with scalar-wave leader election and GLC old-value broadcast. Both no-return and return-old paths pass IR and RTX 4060 Vulkan tests; validation layer was explicitly loaded and the focused log contains no VUID or validation errors. AnyPS5 commit `b1acbb97cc` is pushed to the fork branch.
+- The current focused regression batch passes 6/6 (`shader_memory_decoder_tolerance`, buffer descriptor runtime, scalar buffer store IR/GPU, and scalar buffer atomic add IR/GPU). The latest gfx1013 inventory is now 1,503/1,560.
 - 96 focused Release tests passed on the current worktree, including shader, service, AppContent, SaveData, AGC, and PCK tests. The PCK GPU test and IR decoder test also passed in Debug. PCK execution passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
 - Full Release build was attempted but stopped at the `agc_shader_replay.exe` post-link step because Windows Security marks that generated tool as `Trojan:Win64/ShellCode.MKA!MTB` and blocks `objcopy`; all 413 patched PRX output paths existed at the stop (408 were refreshed during the attempt). The precise blocker is recorded in `BUILD_STATUS.md` and `BLOCKERS.md`.
 - This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Homebrew execution, GTA VI, and first-frame rendering were not tested.
 
 ## Coverage snapshot
 
-`tools/progress.py` on the tested AnyPS5 source reported 2,959/4,240 for the selected library counters (69.79%); 1,502/1,560 gfx1013 reference forms decoded and translated (96.28%); 1,460/1,460 scanned shader forms decoded; and 128 unsupported shader recompiler throw sites. The throw-site count and form count measure different things.
+`tools/progress.py` on the tested AnyPS5 source reported 2,959/4,240 for the selected library counters (69.79%); 1,503/1,560 gfx1013 reference forms decoded and translated (96.35%); 1,460/1,460 scanned shader forms decoded; and 128 unsupported shader recompiler throw sites. The throw-site count and form count measure different things.
 
 Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 97/167; `libSceAppContent` 30/39; `libSceSaveData` 1/19; `libSceSysmodule` 13/21; `libSceSystemService` 146/617; `libSceUserService` 44/695. These are repository progress metrics, not application compatibility percentages.
 

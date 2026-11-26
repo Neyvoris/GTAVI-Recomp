@@ -1,6 +1,6 @@
 # Test results
 
-Updated: 2026-11-26. The current regression batch was observed on AnyPS5 commit `8774f2f9b9`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
+Updated: 2026-11-26. The current regression batch was observed on AnyPS5 commit `b1acbb97cc`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
 ## Targeted tests on merged source
 
@@ -9,6 +9,7 @@ Updated: 2026-11-26. The current regression batch was observed on AnyPS5 commit 
 - `agc_driver_image_pck_n`: PASS in Release and Debug on NVIDIA RTX 4060. Validates PCK2 R8/R16/RG8, PCK4 R8, and mip variants by comparing guest texture bytes, including bounds and no-write regions. Invalid format/layout combinations are rejected. Release also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
 - New DS_SRC2 64-bit verification: PASS 2/2 — `agc_driver_lds_src2` GPU execution and `ds_src2_u64` IR test. The execution test covers 15 forms across 32 lanes each and passed under Vulkan 1.4.363 with the Khronos validation layer explicitly inserted on NVIDIA RTX 4060; the captured log contained no `VUID-` or validation error. Float min/max coverage uses finite inputs only. A standalone `spirv-val` invocation was not run.
 - Scalar buffer store verification: PASS 4/4 — `scalar_buffer_store`, `agc_driver_sbuffer_store`, `shader_memory_decoder_tolerance`, and `agc_driver_buffer_descriptor_runtime`. The first two verify `S_BUFFER_STORE_DWORD/X2/X4` decoder and IR details and exact GPU buffer writes on RTX 4060. Vulkan layer insertion was enabled for the GPU test; no validation errors appeared. This is aligned, in-bounds synthetic coverage.
+- Scalar buffer atomic add verification: PASS 2/2 — `scalar_buffer_atomic_add` and `agc_driver_sbuffer_atomic_add`. Tests cover `GLC=0` and `GLC=1`, confirm one add from a 32-lane wave, and verify the returned old value through a subsequent buffer store. Both ran on RTX 4060 with `VK_LAYER_KHRONOS_validation`; no VUID or validation errors appeared. Combined current focused batch: PASS 6/6.
 - Debug PCK batch: PASS 2/2 after routing MinGW temporary output to D: because the default C: temp volume had no free space.
 
 - Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.
