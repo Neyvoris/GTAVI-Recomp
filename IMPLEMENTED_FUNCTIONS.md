@@ -25,11 +25,13 @@
 - `execl`, `execle`, and `execlp` variadic entry points are present in `third_party/AnyPS5/core/libs/prx/libkernel/System/src/Process.cpp`, declarations in `Api.hpp`, from public AnyPS5 commit `65eaf885f894447d9782f439dcd93e07cdd1cffc` (included in the branch history before the current merge).
 - The earlier `guest_exec_variadic` targeted build and test passed; successful process replacement and console-specific variadic ABI are not verified.
 
-## DS_SRC2 64-bit LDS shader forms
+## DS_SRC2 64-bit LDS and GDS shader forms
 
 - `RdnaMemoryOpDecoder.cpp` now recognizes the gfx1013 DS_SRC2 U64/I64/F64 forms for add, sub, reverse-sub, inc/dec, signed/unsigned min/max, bitwise and/or/xor, write, and finite-value floating min/max. `MemoryInstructionDispatch.cpp` maps these to existing shared-memory 64-bit atomic IR operations; `SharedMemoryInstructions.cpp::dsSrc2U64` reads the second LDS operand at `offset1`, operates on the target at `offset0`, and honors exec masks and denormal-flush metadata.
-- GDS variants still throw explicitly because no GDS implementation or behavior oracle exists. Floating min/max GPU coverage currently uses finite non-NaN values; NaN payload/propagation, signed-zero ties, infinities, and denormals are not individually verified.
-- `agc_driver_lds_src2` executes all 15 opcodes and compares both result dwords for each of 32 lanes against scalar reference functions. It passed on NVIDIA RTX 4060 with `VK_LAYER_KHRONOS_validation` loaded. `ds_src2_u64` checks the generated IR operation mapping. The focused tests do not establish all possible edge-case semantics.
+- GDS source-2 instructions now use the existing M0-base address mapping and GDS memory resource. `agc_driver_gds_m0_base` executes `ds_add_src2_u32` and `ds_add_src2_u64` with 32 active lanes, verifies exact final words, and checks untouched neighboring words. The 64-bit floating GDS min/max path remains explicitly rejected. GPU coverage currently establishes ADD at U32/U64, not every GDS source-2 opcode.
+- Floating min/max GPU coverage currently uses finite non-NaN LDS values; NaN payload/propagation, signed-zero ties, infinities, and denormals are not individually verified.
+- `agc_driver_lds_src2` executes all 15 opcodes and compares both result dwords for each of 32 lanes against scalar reference functions. `ds_src2_u64` checks the generated IR operation mapping. The focused tests do not establish all possible edge-case semantics.
+- Commit `7d69cb0e68519660a3842134ac7f2dcb6ad03976` adds GDS source-2 translation and U32/U64 GPU checks. `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, and `ds_src2_u64` passed 3/3 on RTX 4060; validation-layer loading was not confirmed for this run.
 
 ## Scalar buffer stores
 

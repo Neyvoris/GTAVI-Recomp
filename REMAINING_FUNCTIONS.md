@@ -1,6 +1,6 @@
 # Remaining functions and implementation work
 
-The latest pushed AnyPS5 source is commit `17f36dc3f6` on the fork branch, based on merge `dd95a75a55`. The current aggregate progress scan reports:
+The latest pushed AnyPS5 source is commit `7d69cb0e68` on the fork branch, based on merge `dd95a75a55`. Current `tools/progress.py` reports 18,609/39,467 library inventory entries and 127 shader throw sites. The older selected-library subset scan below has a narrower scope.
 
 | Library / area | Current metric | Remaining by this metric |
 |---|---:|---:|
@@ -14,7 +14,7 @@ The latest pushed AnyPS5 source is commit `17f36dc3f6` on the fork branch, based
 | `libkernel` | 754 / 800 | 46 |
 | `libc` | 1,874 / 1,882 | 8 |
 | gfx1013 reference forms | 1,557 / 1,560 | 3 |
-| Shader throw sites | 128 | 128 still marked unsupported |
+| Shader throw sites | 127 | 127 still marked unsupported |
 
 The scanned shader forms are 1,460/1,460 decoded. The instruction-form inventory, decoded-form inventory, and throw-site count have different denominators and must not be added or treated as interchangeable.
 
@@ -22,8 +22,8 @@ Other broad compatibility areas remain outside this checkpoint, including `libSc
 
 Names/NIDs and aggregate counters do not establish API ABI or semantics. Remaining functions should be prioritized from public behavioral documentation or focused synthetic tests; don't convert an unknown export into success-returning behavior without an oracle. See [BLOCKERS.md](BLOCKERS.md).
 
-The 15 newly covered gfx1013 forms are the DS_SRC2 64-bit operations; three scalar buffer store forms, three scalar raw-address store forms, 26 scalar buffer atomic forms, and all 26 scalar-address atomic forms are implemented and tested. The three remaining decoded-reference forms are scalar scratch-store DWORD/X2/X4. The public ISA and LLVM opcode records were confirmed, but guest FLAT_SCRATCH/per-wave scalar scratch mapping is absent: the current Vulkan scratch pool is an internal per-invocation allocation and cannot safely be addressed using the guest SMEM base. GDS source-2 behavior and F64 floating edge cases remain outside the verified subset.
+Implemented gfx1013 slices include DS_SRC2 64-bit operations; three scalar buffer stores; three scalar raw-address stores; 26 scalar buffer atomics; and 26 scalar-address atomics. GDS source-2 translation now applies M0-base addressing; ADD U32/U64 are GPU-tested. The remaining three decoded-reference forms are scalar scratch-store DWORD/X2/X4. Guest FLAT_SCRATCH/per-wave scalar scratch mapping is absent; the current Vulkan scratch pool is internal per-invocation storage and cannot safely use the guest SMEM base. Other GDS source-2 opcodes and F64 floating GDS min/max remain unverified or unsupported.
 
 ## Latest implemented shader slice
 
-PCK2/PCK4 image store and mip-store opcodes have a verified, deliberately bounded path, 15 DS_SRC2 64-bit forms pass a focused 32-lane GPU test, scalar buffer DWORD/X2/X4 and scalar raw DWORD/X2/X4 stores pass exact GPU checks, all scalar buffer and scalar-address atomic DWORD/X2 forms pass on GPU, and the current gfx1013 reference-form inventory is 1,557/1,560 (see `IMPLEMENTED_FUNCTIONS.md`). The unsupported throw-site counter is 128; it is a static source-site count, not the number of unresolved opcodes and not a runtime failure count. Scalar scratch stores, unmeasured image shapes/swizzles, 64-bit DS_SRC2 GDS, and F64 floating edge cases remain unsupported or unverified.
+PCK2/PCK4 image stores and mip stores have a verified, bounded path; 15 DS_SRC2 64-bit LDS forms and GDS ADD U32/U64 pass focused 32-lane GPU checks; scalar buffer/raw stores and atomics pass their exact GPU checks. The gfx1013 reference inventory is 1,557/1,560. The 127 unsupported throw-site count is a static source-site count, not unresolved opcodes or runtime failures. Scalar scratch stores, unmeasured image layouts, other GDS DS_SRC2 opcodes, and floating edge cases remain unsupported or unverified.

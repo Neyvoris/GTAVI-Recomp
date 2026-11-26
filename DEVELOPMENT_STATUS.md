@@ -22,7 +22,7 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 
 ## Coverage snapshot
 
-`tools/progress.py` on the current AnyPS5 commit `126087d9ea` reports 1,557/1,560 gfx1013 reference forms decoded and translated; 1,460/1,460 scanned shader forms decoded; and 128 unsupported shader recompiler throw sites. The remaining three reference forms are the scalar scratch-store widths. The throw-site count and form count measure different things. The separate selected-library subset scan (2,959/4,240) is from an earlier source snapshot and should not be compared to the refreshed all-library count.
+`tools/progress.py` on current AnyPS5 commit `7d69cb0e68` reports 1,557/1,560 gfx1013 reference forms decoded and translated; 1,460/1,460 scanned shader forms decoded; and 127 unsupported shader recompiler throw sites. The remaining three reference forms are scalar scratch-store widths. The throw-site count and form count measure different things. Full-library inventory is 18,609/39,467; the older selected-library subset scan (2,959/4,240) has different scope.
 
 Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 97/167; `libSceAppContent` 30/39; `libSceSaveData` 1/19; `libSceSysmodule` 13/21; `libSceSystemService` 146/617; `libSceUserService` 44/695. These are repository progress metrics, not application compatibility percentages.
 
@@ -30,6 +30,7 @@ Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 9
 
 - Follow-up audit on 2026-11-26 confirmed the three remaining gfx1013 reference forms are `S_SCRATCH_STORE_DWORD/X2/X4` (SMEM `0x15–0x17`). The source currently has no guest `FLAT_SCRATCH`/scalar scratch base mapping; the Vulkan scratch pool is an internal per-invocation allocation. A raw BDA store or using `RdnaOperand.value` as a scale would be semantically wrong, so no decoder-only patch was retained. Public AMD RDNA2 ISA and LLVM GFX10 encoding were consulted; implementation remains blocked until guest scratch-address mapping is modeled.
 - Rebuilt `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` on 2026-11-26 in `D:\a5adv3`; Ninja completed the incremental build, including `libkernel.prx`, `shader_recompiler_agc_driver`, and `libSceAgcDriver.prx`. Focused tests passed 2/2. An existing GCC 16 STL `-Wstringop-overread` warning appeared in a library vector comparison; the build completed successfully.
+- Added GDS M0-base addressing to DS_SRC2 translation, retaining an explicit rejection for 64-bit floating GDS min/max. New 32-lane GPU checks for `ds_add_src2_u32` and `_u64` passed alongside existing LDS SRC2 and IR tests (3/3). AnyPS5 commit `7d69cb0e68519660a3842134ac7f2dcb6ad03976` is pushed to the fork branch.
 
 - Exact build and test evidence is in [BUILD_STATUS.md](BUILD_STATUS.md) and [TEST_RESULTS.md](TEST_RESULTS.md).
 - Remaining API and shader work is in [REMAINING_FUNCTIONS.md](REMAINING_FUNCTIONS.md); blockers and missing behavioral oracles are in [BLOCKERS.md](BLOCKERS.md).
