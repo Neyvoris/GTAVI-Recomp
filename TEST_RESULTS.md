@@ -1,6 +1,6 @@
 # Test results
 
-Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `aacb4abb48`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
+Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `126087d9ea`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
 ## Targeted tests on merged source
 
@@ -13,6 +13,7 @@ Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `aa
 - Compare-swap/INC/DEC verification: PASS 2/2 — the scalar atomic IR test asserts desired/comparator operands for DWORD/X2 compare-swap, opcode routing and leader lane guard; RTX 4060 Vulkan execution confirms successful compare-and-replace and increment/decrement wrap-limit branches at both widths, with GLC on/off. Validation was not re-enabled for this latest run; earlier RMW GPU tests passed with the Khronos layer enabled. The adjacent regression batch passed 6/6 on this commit.
 - Scalar-address atomic ADD verification on `45a0194afa`: PASS 2/2 targeted IR+GPU tests for DWORD/X2 and GLC on/off. The GPU test confirms one-wave memory changes from 7 to 12 and the returned old value is 7; the subsequent six-test regression batch passed 6/6. Loader environment forcing did not confirm that `VK_LAYER_KHRONOS_validation` was actually loaded for this run, so no validation-layer claim is made for this new path.
 - Scalar raw-address store verification on `aacb4abb48`: PASS 2/2 targeted IR+GPU tests for `S_STORE_DWORD/X2/X4`; the GPU test checks exact data words and untouched sentinels with a registered BDA mapping. An initial unregistered host-pointer attempt correctly faulted and was replaced with the mapped-memory test. The adjacent six-test batch passed 6/6. Validation-layer loading was not confirmed for this run.
+- Full scalar-address atomic family on `126087d9ea`: PASS 2/2 targeted IR+GPU tests. All 13 DWORD and 13 X2 opcodes (SWAP, compare-swap, ADD/SUB, signed/unsigned MIN/MAX, AND/OR/XOR, INC/DEC) were checked with GLC off/on. GPU reference comparisons verify exact memory results and returned values; CAS exercises successful replacement, INC/DEC exercise their limit wrap branches. Adjacent regression batch passed 6/6. Validation-layer loading was not confirmed for this run.
 - Debug PCK batch: PASS 2/2 after routing MinGW temporary output to D: because the default C: temp volume had no free space.
 
 - Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.

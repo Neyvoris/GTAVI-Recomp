@@ -22,7 +22,7 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 
 ## Coverage snapshot
 
-`tools/progress.py` on the current AnyPS5 commit `aacb4abb48` reports 1,533/1,560 gfx1013 reference forms decoded and translated; 1,460/1,460 scanned shader forms decoded; and 128 unsupported shader recompiler throw sites. The throw-site count and form count measure different things. The separate selected-library subset scan (2,959/4,240) is from an earlier source snapshot and should not be compared to the refreshed all-library count.
+`tools/progress.py` on the current AnyPS5 commit `126087d9ea` reports 1,557/1,560 gfx1013 reference forms decoded and translated; 1,460/1,460 scanned shader forms decoded; and 128 unsupported shader recompiler throw sites. The remaining three reference forms are the scalar scratch-store widths. The throw-site count and form count measure different things. The separate selected-library subset scan (2,959/4,240) is from an earlier source snapshot and should not be compared to the refreshed all-library count.
 
 Selected libraries: `libc` 1,874/1,882; `libkernel` 754/800; `libSceAgcDriver` 97/167; `libSceAppContent` 30/39; `libSceSaveData` 1/19; `libSceSysmodule` 13/21; `libSceSystemService` 146/617; `libSceUserService` 44/695. These are repository progress metrics, not application compatibility percentages.
 
