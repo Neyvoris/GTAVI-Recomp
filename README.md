@@ -46,11 +46,11 @@ Details in [TODO.md](TODO.md).
 
 ### Foundation from AnyPS5
 
-Measured by AnyPS5's own `tools/progress.py` at the pinned commit [`17f36dc`](https://github.com/boykopovar/AnyPS5/tree/17f36dc3f6394a0478fea9ed5e142020bc1d2487).
+Measured by AnyPS5's own `tools/progress.py` at the pinned commit [`45a0194`](https://github.com/boykopovar/AnyPS5/tree/45a0194afac4f245a0fb113cfd34c8d5638b09c3).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="progress/anyps5-dark.svg">
-  <img src="progress/anyps5-light.svg" width="820" alt="AnyPS5: shaders translated 1460/1460 (RDNA 2 reference) and 1528/1560 (gfx1013 reference); system library functions 18609/39467">
+  <img src="progress/anyps5-light.svg" width="820" alt="AnyPS5: shaders translated 1460/1460 (RDNA 2 reference) and 1530/1560 (gfx1013 reference); system library functions 18609/39467">
 </picture>
 
 The libraries listed are ones nearly every PS5 game imports; GTA VI's actual

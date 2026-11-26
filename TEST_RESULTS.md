@@ -1,6 +1,6 @@
 # Test results
 
-Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `17f36dc3f6`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
+Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `45a0194afa`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
 ## Targeted tests on merged source
 
@@ -11,6 +11,7 @@ Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `17
 - Scalar buffer store verification: PASS 4/4 — `scalar_buffer_store`, `agc_driver_sbuffer_store`, `shader_memory_decoder_tolerance`, and `agc_driver_buffer_descriptor_runtime`. The first two verify `S_BUFFER_STORE_DWORD/X2/X4` decoder and IR details and exact GPU buffer writes on RTX 4060. Vulkan layer insertion was enabled for the GPU test; no validation errors appeared. This is aligned, in-bounds synthetic coverage.
 - Scalar buffer atomic verification after x2: PASS 2/2 — `scalar_buffer_atomic_add` and `agc_driver_sbuffer_atomic_add`. Covers ten 32-bit and ten 64-bit RMW operators for `GLC=0/1`, one elected lane in a 32-lane wave, and returned old values through following stores. The previously tracked adjacent focused regression batch passed 6/6.
 - Compare-swap/INC/DEC verification: PASS 2/2 — the scalar atomic IR test asserts desired/comparator operands for DWORD/X2 compare-swap, opcode routing and leader lane guard; RTX 4060 Vulkan execution confirms successful compare-and-replace and increment/decrement wrap-limit branches at both widths, with GLC on/off. Validation was not re-enabled for this latest run; earlier RMW GPU tests passed with the Khronos layer enabled. The adjacent regression batch passed 6/6 on this commit.
+- Scalar-address atomic ADD verification on `45a0194afa`: PASS 2/2 targeted IR+GPU tests for DWORD/X2 and GLC on/off. The GPU test confirms one-wave memory changes from 7 to 12 and the returned old value is 7; the subsequent six-test regression batch passed 6/6. Loader environment forcing did not confirm that `VK_LAYER_KHRONOS_validation` was actually loaded for this run, so no validation-layer claim is made for this new path.
 - Debug PCK batch: PASS 2/2 after routing MinGW temporary output to D: because the default C: temp volume had no free space.
 
 - Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.
