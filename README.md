@@ -46,17 +46,17 @@ Details in [TODO.md](TODO.md).
 
 ### Foundation from AnyPS5
 
-Measured by AnyPS5's own `tools/progress.py` at the pinned commit [`1582613`](https://github.com/boykopovar/AnyPS5/tree/15826135019b8c7de27f42661a850a1dd9750932).
+Measured by AnyPS5's own `tools/progress.py` at the pinned commit [`126087d`](https://github.com/boykopovar/AnyPS5/tree/126087d9ea228ec7f5240149b67cf0f720f30999).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="progress/anyps5-dark.svg">
-  <img src="progress/anyps5-light.svg" width="820" alt="AnyPS5: shaders translated 1460/1460 (RDNA 2 reference) and 1484/1560 (gfx1013 reference); system library functions 17749/39253">
+  <img src="progress/anyps5-light.svg" width="820" alt="AnyPS5: shaders translated 1460/1460 (RDNA 2 reference) and 1557/1560 (gfx1013 reference); system library functions 18609/39467">
 </picture>
 
 The libraries listed are ones nearly every PS5 game imports; GTA VI's actual
 list is unknown until its files can be researched. A translated shader
 instruction or implemented function is counted from source code and does not
-show that a game runs. The recompiler still has 126
+show that a game runs. The recompiler still has 128
 code paths that report an unsupported case.
 <!-- progress:end -->
 

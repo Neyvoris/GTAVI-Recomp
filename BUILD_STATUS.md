@@ -2,33 +2,34 @@
 
 Updated: 2026-11-26.
 
-## Full AnyPS5 Windows x64 runtime
+## Tested source
 
-- Source: `third_party/AnyPS5` at `7d69cb0e68519660a3842134ac7f2dcb6ad03976` on `codex/gtavi-compatibility-advance` (user-owned fork).
-- Compiler: MSYS2 UCRT64 MinGW-w64 GCC/G++ 16.1.0, target `x86_64-w64-mingw32`; CMake feature checks accepted the required Windows SEH and shared-pointer atomic support.
-- Generator: Ninja 1.13.2; CMake 4.4.4.
-- Release build directory: `D:\GTAVI-Recomp-build\a5-msys2-ucrt` (move to D: after the C: volume filled during the initial attempt).
-- Configure: full runtime (`ANYPS5_RELINKER_ONLY=OFF`), tests on, bundled dependencies, SPIRV-Tools on. `SKIP_SPIRV_TOOLS_INSTALL=ON` avoids a CMake export-set failure caused by the global `windows_seh_personalities` link target; no dependency source was changed.
-- Build result: PARTIAL/FAILED. Ninja keep-going completed independent work; 413 PRX artifacts were produced. 37 AGC tool/test executable targets failed post-link after Windows Security quarantined generated `.exe` files, causing `objcopy` to report `Invalid argument`. Security settings were not modified. See `TEST_RESULTS.md`.
-- Validation-enabled configure/build/test recipe: `scripts/build-anyps5-windows.ps1` (`Release` or `Debug`). Use `-BuildDirectory D:\...` when the repository volume has limited free space.
-- Debug build: NOT RUN.
+- Parent: `codex/windows-x64-preflight`, working copy `D:\GTAVI-Recomp-dev-d`.
+- AnyPS5: `third_party/AnyPS5`, branch `codex/gtavi-compatibility-advance`, latest tested/pushed commit `126087d9ea` (`feat(shader): translate scalar address atomics`), based on merge `dd95a75a55`. Upstream repositories were not modified.
+- Build tree: `D:\a5adv3`.
 
-## Focused implementation build
+## Windows x64 Release targeted build
 
-- Existing full-runtime Ninja tree: `D:\a5adv3` (Release, Windows x64 MinGW; source checkout `D:\GTAVI-Recomp-dev-d\third_party\AnyPS5` at the same pinned commit).
-- Rebuilt focused targets for scalar buffer tests, packed image tests, DS/GDS SRC2 tests, and their translation tests successfully. The build completed without compile/link errors for those targets.
-
-## Parent repository baseline
-
-Before this task, the parent project's existing Windows Release build passed three CTest tests; 44 Python unit tests and 10 app0 fixture tests passed. The AnyPS5 MSVC test attempt was incompatible with GNU extensions and is superseded by the MinGW full-runtime attempt.
+- Compiler: MSYS2 UCRT64 MinGW-w64 GCC/G++ 16.1.0, target x86_64-w64-mingw32.
+- CMake 4.4.4, Ninja, Vulkan SDK 1.4.363.0, SPIRV-Tools enabled; bundled dependencies; full-runtime configuration (`ANYPS5_RELINKER_ONLY=OFF`), tests on, `SKIP_SPIRV_TOOLS_INSTALL=ON`.
+- **PASS for requested targets:** `shader_recompiler_agc_driver`; PRX libraries `libSceAgcDriver`, `libSceSystemService`, `libSceUserService`, `libSceSaveData`, `libSceAppContent`, and `libSceSysmodule`; and the test binaries listed in `TEST_RESULTS.md`. Focused AppContent and SaveData suites were built and passed after the initial service/shader test batch.
+- This was a targeted build, not a clean all-target build. Third-party glslang/STL warnings appeared, but selected targets linked successfully.
+- Debug configuration succeeded at `D:\a5advdbg`. The same shader recompiler/AGC target, six selected PRX libraries, and three shader test executables built successfully; rerunning Ninja confirmed exit code 0. Debug CTest for the three shader tests passed 3/3. This is still targeted, not a full Debug build.
+- After the DS_SRC2 source changes, a clean Release rebuild of the AGC library and its dependencies completed, including the previously stale `agc_driver_address_draw_space_reuse_tests` link. The new `agc_driver_lds_src2_tests` and `ds_src2_u64_tests` targets then built successfully in `D:\a5adv3`; this was a clean AGC-target dependency rebuild, not a clean all-runtime build.
+- After scalar SMEM store changes, Release targets `scalar_buffer_store_tests` and `agc_driver_sbuffer_store_tests` compiled and linked successfully in `D:\a5adv3`. This rebuilt shader recompiler, libSceAgcDriver PRX, and test dependencies; it is not a full-runtime build.
+- After scalar buffer atomic add changes, Release targets `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` compiled and linked successfully in `D:\a5adv3`; the shader recompiler and libSceAgcDriver PRX dependencies rebuilt. This remains a targeted build.
+- After adding the other 32-bit scalar buffer atomic operators, the same Release targets rebuilt and passed. The focused 6-test regression batch also passed after this change; this is still not a full-runtime build.
+- After adding scalar buffer compare-swap DWORD/X2 decoding and translation, Release target rebuild `scalar_buffer_atomic_add_tests agc_driver_sbuffer_atomic_add_tests` succeeded in `D:\a5adv3`; focused IR and RTX 4060 Vulkan tests passed 2/2. This does not rebuild every runtime target.
+- After adding scalar buffer INC/DEC DWORD/X2 decoding and translation, the same Release targets rebuilt; the GPU and IR tests passed 2/2. The adjacent six-test regression batch passed 6/6 on commit `17f36dc3f6`.
+- After adding scalar-address `S_ATOMIC_ADD` DWORD/X2, Release targets `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` rebuilt successfully. RTX 4060 GPU+IR tests and the adjacent six-test regression batch passed (2/2 targeted and 6/6 regression) on commit `45a0194afa`.
+- After adding scalar raw-address `S_STORE_DWORD/X2/X4`, the same Release targets rebuilt; exact RTX 4060 GPU and IR checks passed, followed by the adjacent regression batch 6/6 on commit `aacb4abb48`. An initial raw pointer test faulted because no BDA mapping existed; the passing test registers the same memory through a normal buffer descriptor, matching runtime address-mapping requirements.
+- After adding the remaining 24 scalar-address atomic forms, Release shader-recompiler/AGC targets and the two focused test binaries rebuilt successfully. All 26 DWORD/X2 atomics passed GPU execution and IR checks for both GLC modes; adjacent regression batch passed 6/6 on `126087d9ea`.
+- After the packed-store changes, the focused Debug `agc_driver_image_pck_n_tests` and `image_pck_n_tests` targets built and passed 2/2. C: had no free space for MinGW's default temporary output; setting `TMP`, `TEMP`, and `TMPDIR` to `D:\a5temp\mingw-temp` allowed this targeted build to complete. The full Debug build remains unverified.
+- A complete Release `ninja` build was attempted (`11,086` planned operations). It stopped at the AGC tool post-link step for `agc_shader_replay.exe`: Windows Security identifies it as `Trojan:Win64/ShellCode.MKA!MTB` (ThreatID `2147960850`) and blocks reads, so GNU `objcopy` reports `Invalid argument`. The alert is reproduced in Defender's read-only threat history. No protection settings were changed. At the stop, all 413 patched `.prx` output paths existed; 408 had been written during this build attempt and five predated it. The complete all-target build did not finish.
 
 ## Reproduction
 
-From a PowerShell prompt in the repository:
+- 2026-11-26 refresh: `ninja scalar_buffer_atomic_add_tests agc_driver_sbuffer_atomic_add_tests` completed successfully in `D:\a5adv3` after rebuilding 205 incremental steps (including kernel, shader recompiler, and AGC PRX). A GCC 16 STL `-Wstringop-overread` warning appeared during the existing `std::vector<std::byte>` comparison code; no build error resulted. `ctest --output-on-failure -R "^(scalar_buffer_atomic_add|agc_driver_sbuffer_atomic_add)$"` passed 2/2.
+- 2026-11-26 GDS SRC2 follow-up: Release shader recompiler/AGC PRX and `agc_driver_gds_m0_base_tests` rebuilt successfully in `D:\a5adv3`; `agc_driver_lds_src2_tests` and `ds_src2_u64_tests` built too. Associated CTest cases passed 3/3. Use configured Ninja 1.13.2; the older CodeBlocks Ninja binary is incompatible with this build tree's log format.
 
-```powershell
-scripts\build-anyps5-windows.ps1 -Configuration Release
-scripts\build-anyps5-windows.ps1 -Configuration Debug
-```
-
-The script validates the x86-64 MinGW target, initializes recursive submodules, configures the full runtime with tests and SPIR-V validation, builds, then runs CTest. Supply `-MinGWBin` if GCC is not on PATH or in a recognized MSYS2 UCRT64 location.
+The repo helper `scripts/build-anyps5-windows.ps1` configures and builds the full runtime, and now places `TMP`, `TEMP`, and MinGW `TMPDIR` under the selected build directory. This checkpoint's CMake build directory was `D:\a5adv3`; it completed all 413 patched PRX outputs before Windows Security blocked the AGC replay tool post-link step. The helper does not bypass that blocker.

@@ -1,13 +1,29 @@
 # Remaining functions and implementation work
 
-Further AnyPS5 compatibility work remains. Existing debt figures below come from the project's documented audit, not from GTA VI imports or measured application compatibility:
+The latest pushed AnyPS5 source is commit `7d69cb0e68` on the fork branch, based on merge `dd95a75a55`. Current `tools/progress.py` reports 18,609/39,467 library inventory entries and 127 shader throw sites. The older selected-library subset scan below has a narrower scope.
 
-- `libSceAgcDriver`: 97 of 167 functions declared implemented; 312 documented behavior-gap entries.
-- `libSceVideoOut`: 78 of 290.
-- `libSceAudioOut`: 78 of 219.
-- `libScePad`: 56 of 222.
-- gfx1013 reference forms: 1,557 of 1,560 translated by the current scanner. The scanner also reports 127 unsupported throw sites; this is a different metric from the older 126-path audit and does not itself identify actionable forms.
+| Library / area | Current metric | Remaining by this metric |
+|---|---:|---:|
+| Selected libraries combined (earlier subset scan) | 2,959 / 4,240 (69.79%) | 1,281 |
+| `libSceAgcDriver` | 97 / 167 | 70 |
+| `libSceSystemService` | 146 / 617 | 471 |
+| `libSceUserService` | 44 / 695 | 651 |
+| `libSceSaveData` | 1 / 19 | 18 |
+| `libSceAppContent` | 30 / 39 | 9 |
+| `libSceSysmodule` | 13 / 21 | 8 |
+| `libkernel` | 754 / 800 | 46 |
+| `libc` | 1,874 / 1,882 | 8 |
+| gfx1013 reference forms | 1,557 / 1,560 | 3 |
+| Shader throw sites | 127 | 127 still marked unsupported |
 
-These figures do not identify which missing behavior is needed by an application. A code change needs an authoritative public behavioral source or a synthetic upstream test oracle. The validation-enabled shader/AGC build is partial because of the Windows Security quarantine block; `scripts/build-anyps5-windows.ps1` enables those tests. The three remaining gfx1013 reference forms are `S_SCRATCH_STORE_DWORD`, `S_SCRATCH_STORE_DWORDX2`, and `S_SCRATCH_STORE_DWORDX4`; their gfx1013 scratch address mapping remains unestablished. `sceKernelStopUnloadModule` still lacks a proven `module_stop` entry address/ABI in relinker metadata, so ELF `DT_FINI` is not substituted.
+The scanned shader forms are 1,460/1,460 decoded. The instruction-form inventory, decoded-form inventory, and throw-site count have different denominators and must not be added or treated as interchangeable.
 
-The `execl` family test does not cover successful process replacement. Runtime execution of homebrew and actual title imports remain unverified. No unknown or untested API is marked complete. Full CTest had 122 failures and 37 skipped tests; many AGC failures were unlaunchable binaries after Windows Security quarantine, while additional upstream checks failed independently. Consult `TEST_RESULTS.md` before treating the baseline suite as green. See `BLOCKERS.md` for source-boundary and runtime constraints.
+Other broad compatibility areas remain outside this checkpoint, including `libSceVideoOut` (78/290), `libSceAudioOut` (78/219), and `libScePad` (56/222) in the prior audit. No full execution of a legally available PS5 homebrew app or correct rendered first frame was achieved.
+
+Names/NIDs and aggregate counters do not establish API ABI or semantics. Remaining functions should be prioritized from public behavioral documentation or focused synthetic tests; don't convert an unknown export into success-returning behavior without an oracle. See [BLOCKERS.md](BLOCKERS.md).
+
+Implemented gfx1013 slices include DS_SRC2 64-bit operations; three scalar buffer stores; three scalar raw-address stores; 26 scalar buffer atomics; and 26 scalar-address atomics. GDS source-2 translation now applies M0-base addressing; ADD U32/U64 are GPU-tested. The remaining three decoded-reference forms are scalar scratch-store DWORD/X2/X4. Guest FLAT_SCRATCH/per-wave scalar scratch mapping is absent; the current Vulkan scratch pool is internal per-invocation storage and cannot safely use the guest SMEM base. Other GDS source-2 opcodes and F64 floating GDS min/max remain unverified or unsupported.
+
+## Latest implemented shader slice
+
+PCK2/PCK4 image stores and mip stores have a verified, bounded path; 15 DS_SRC2 64-bit LDS forms and GDS ADD U32/U64 pass focused 32-lane GPU checks; scalar buffer/raw stores and atomics pass their exact GPU checks. The gfx1013 reference inventory is 1,557/1,560. The 127 unsupported throw-site count is a static source-site count, not unresolved opcodes or runtime failures. Scalar scratch stores, unmeasured image layouts, other GDS DS_SRC2 opcodes, and floating edge cases remain unsupported or unverified.

@@ -1,30 +1,47 @@
 # Test results
 
-Updated: 2026-11-26. This file records only observed results.
+## 2026-11-26 follow-up
 
-## Focused compatibility additions on `7d69cb0e68519660a3842134ac7f2dcb6ad03976`
+- Fresh Release incremental build of `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` passed in `D:\a5adv3`, rebuilding shader recompiler, `libkernel.prx`, and `libSceAgcDriver.prx` dependencies.
+- Fresh focused CTest run passed 2/2: `agc_driver_sbuffer_atomic_add` (RTX 4060 Vulkan execution) and `scalar_buffer_atomic_add` (IR/decoder checks). These reconfirm the pushed `126087d9ea` scalar buffer/address atomic implementations; this run does not extend coverage to scratch stores or enable a newly confirmed Vulkan validation-layer run.
+- A `ctest -N` inspection found 7,114 registered tests in the existing build tree; most test executables are absent, so this was not a full-suite test run.
+- GDS DS_SRC2 follow-up on AnyPS5 commit `7d69cb0e68`: PASS 3/3 (`agc_driver_gds_m0_base`, `agc_driver_lds_src2`, `ds_src2_u64`). New RTX 4060 tests verify 32-lane GDS `ds_add_src2_u32` and `_u64` load from the secondary offset, update the M0-based target, and preserve neighboring words. A dedicated rerun confirmed the Khronos validation layer was loaded and produced no VUID or validation errors.
 
-- Built the focused Release test targets in `D:\a5adv3`: `agc_driver_gcn_scalar_buffer_base_tests`, `agc_driver_gds_m0_base_tests`, `agc_driver_lds_src2_tests`, `agc_driver_sbuffer_atomic_add_tests`, `agc_driver_sbuffer_store_tests`, `agc_driver_scalar_buffer_runtime_word3_tests`, `scalar_buffer_atomic_add_tests`, `scalar_buffer_store_tests`, `agc_driver_image_table_packed_tests`, `image_pck_n_tests`, and `ds_src2_u64_tests`.
-- CTest PASS 14/14: `agc_driver_gcn_scalar_buffer_base`, `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, `agc_driver_sbuffer_atomic_add`, `agc_driver_sbuffer_store`, `agc_driver_scalar_buffer_runtime_word3`, `agc_driver_image_table_packed_stores`, `agc_driver_image_table_packed_guards`, `agc_driver_image_table_packed_rejected`, `agc_driver_image_table_packed_mips`, `ds_src2_u64`, `image_pck_n`, `scalar_buffer_atomic_add`, and `scalar_buffer_store`.
-- These tests exercise specific operations locally through Vulkan and synthetic shader translation fixtures. They do not verify every instruction variant or title runtime.
+Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `126087d9ea`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
-## Parent repository baseline
+## Targeted tests on merged source
 
-- `cmd /c scripts\build-windows.bat Release`: PASS; all 3 CTest tests.
-- `python scripts/update_progress.py --check`: PASS.
-- `python -m unittest discover -s tests/python -v`: PASS, 44 tests.
-- `python -I tests/test_check_app0.py`: PASS, 10 synthetic fixture tests.
+- Current worktree regression batch: PASS 96/96 Release tests across shader recompiler, SystemService, UserService, Sysmodule, AppContent, SaveData, and AGC. This includes the two new PCK store tests and all previously tracked focused tests in those suites.
+- `image_pck_n`: PASS in Release and Debug. Verifies the PCK2/PCK4 store and mip store opcodes decode and lower to one IR `ImageWrite` while preserving packed width, dmask, data size, and mip metadata.
+- `agc_driver_image_pck_n`: PASS in Release and Debug on NVIDIA RTX 4060. Validates PCK2 R8/R16/RG8, PCK4 R8, and mip variants by comparing guest texture bytes, including bounds and no-write regions. Invalid format/layout combinations are rejected. Release also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- New DS_SRC2 64-bit verification: PASS 2/2 — `agc_driver_lds_src2` GPU execution and `ds_src2_u64` IR test. The execution test covers 15 forms across 32 lanes each and passed under Vulkan 1.4.363 with the Khronos validation layer explicitly inserted on NVIDIA RTX 4060; the captured log contained no `VUID-` or validation error. Float min/max coverage uses finite inputs only. A standalone `spirv-val` invocation was not run.
+- Scalar buffer store verification: PASS 4/4 — `scalar_buffer_store`, `agc_driver_sbuffer_store`, `shader_memory_decoder_tolerance`, and `agc_driver_buffer_descriptor_runtime`. The first two verify `S_BUFFER_STORE_DWORD/X2/X4` decoder and IR details and exact GPU buffer writes on RTX 4060. Vulkan layer insertion was enabled for the GPU test; no validation errors appeared. This is aligned, in-bounds synthetic coverage.
+- Scalar buffer atomic verification after x2: PASS 2/2 — `scalar_buffer_atomic_add` and `agc_driver_sbuffer_atomic_add`. Covers ten 32-bit and ten 64-bit RMW operators for `GLC=0/1`, one elected lane in a 32-lane wave, and returned old values through following stores. The previously tracked adjacent focused regression batch passed 6/6.
+- Compare-swap/INC/DEC verification: PASS 2/2 — the scalar atomic IR test asserts desired/comparator operands for DWORD/X2 compare-swap, opcode routing and leader lane guard; RTX 4060 Vulkan execution confirms successful compare-and-replace and increment/decrement wrap-limit branches at both widths, with GLC on/off. Validation was not re-enabled for this latest run; earlier RMW GPU tests passed with the Khronos layer enabled. The adjacent regression batch passed 6/6 on this commit.
+- Scalar-address atomic ADD verification on `45a0194afa`: PASS 2/2 targeted IR+GPU tests for DWORD/X2 and GLC on/off. The GPU test confirms one-wave memory changes from 7 to 12 and the returned old value is 7; the subsequent six-test regression batch passed 6/6. Loader environment forcing did not confirm that `VK_LAYER_KHRONOS_validation` was actually loaded for this run, so no validation-layer claim is made for this new path.
+- Scalar raw-address store verification on `aacb4abb48`: PASS 2/2 targeted IR+GPU tests for `S_STORE_DWORD/X2/X4`; the GPU test checks exact data words and untouched sentinels with a registered BDA mapping. An initial unregistered host-pointer attempt correctly faulted and was replaced with the mapped-memory test. The adjacent six-test batch passed 6/6. Validation-layer loading was not confirmed for this run.
+- Full scalar-address atomic family on `126087d9ea`: PASS 2/2 targeted IR+GPU tests. All 13 DWORD and 13 X2 opcodes (SWAP, compare-swap, ADD/SUB, signed/unsigned MIN/MAX, AND/OR/XOR, INC/DEC) were checked with GLC off/on. GPU reference comparisons verify exact memory results and returned values; CAS exercises successful replacement, INC/DEC exercise their limit wrap branches. Adjacent regression batch passed 6/6. Validation-layer loading was not confirmed for this run.
+- Debug PCK batch: PASS 2/2 after routing MinGW temporary output to D: because the default C: temp volume had no free space.
 
-## AnyPS5 full runtime on MinGW
+- Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.
+- System/service tests: PASS 43/43 — `guest_system_service|guest_sysmodule|guest_user_service`, including bounded path/profile cases, title metadata, lifecycle, login-list, and invalid sysmodule IDs.
+- AppContent: PASS 9/9 — `guest_appcontent`, including download quota boundaries, entitlement parsing, license responses, and mount alias collisions.
+- SaveData: PASS 35/35 — `guest_savedata`, including bounds, backup/recovery, search/size/delete/convert, mount status, event callbacks, host-space handling, and icon round trips.
+- AGC/Vulkan execution: PASS 2/2 — `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`.
+- Repeated the two AGC tests with `VK_LAYER_KHRONOS_validation` set in the process environment: PASS 2/2.
+- Aggregate selected Release result: 92/92 tests passed. No homebrew/title runtime tests were run.
+- AGC storage write-back follow-up on restored source: recorder target build passed; `agc_storage_write_back` and `agc_storage_write_back_scratch` passed 2/2 using the agent's CMake/CTest installation. The opt-in `agc_storage_write_back_host_retile` route-count assertion still fails for `linear 240x135, 2 mips`: `linearRows` rejects tail mips before host import (`0 direct, 0 host-blocked, 1 other`). Texel, row-padding, and outside-byte checks passed via scratch fallback in the diagnostic run; only the fast-path assertion failed. This does not establish direct-retile correctness for tail-mip layouts, so no guard or expectation was changed. The root shell used for this follow-up did not have `ctest`/CMake available for independent rerun.
+- Debug configuration: selected recompiler/AGC and six PRX targets built; shader trio `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, and `scalar_scratch_load` passed 3/3. Full Debug CTest was not run.
 
-- First configure: PASS for Release with tests on and full runtime enabled.
-- First build: FAILED at 8,175/11,731 Ninja steps with `ld.exe: final link failed: No space left on device`; C: had zero free space. The generated build directory was moved to D:.
-- Validation-enabled configure: PASS at `D:\GTAVI-Recomp-build\a5-msys2-ucrt` with `ANYPS5_ENABLE_SPIRV_TOOLS=ON`, `SKIP_SPIRV_TOOLS_INSTALL=ON`, tests on, and full runtime enabled. Without `SKIP_SPIRV_TOOLS_INSTALL`, CMake generation failed because an exported SPIRV-Tools target depends on AnyPS5's global `windows_seh_personalities` object target.
-- Keep-going build finished with 37 AGC executable targets failing after generated binaries were quarantined by Windows Security; 413 PRX library artifacts were produced. Full runtime build is not clean.
-- Targeted runtime build: PASS; `guest_exec_variadic_tests.exe` compiled and linked from AnyPS5 commit `97919d82f8456c70bcb7b739b9d418d8c375bba7`.
-- Targeted CTest: PASS, `ctest -R ^guest_exec_variadic$` (1/1).
-- Full CTest: all 6,651 registered tests completed in 1,284.23 seconds; 6,492 passed, 122 failed, and 37 were skipped. Failures include missing/quarantined AGC executables (`BAD_COMMAND`/`Not Run`) and independent failures such as shader-cache source checks, `pr_overlap_tools`, `performance_bisect`, `conventions_doc_links`, `title_run`, `test_executable_manifests` (timeout), `nid_patch_dependencies`, `test_thread_local_destructors`, and several AGC runtime checks. Full log: `D:\GTAVI-Recomp-build\a5-msys2-ucrt\ctest-full-dtemp.log`; CTest failure index: `D:\GTAVI-Recomp-build\a5-msys2-ucrt\Testing\Temporary\LastTestsFailed.log`.
-- Focused Vulkan validation run: PASS, 3/3: `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`, and `guest_video_out_vblank_status`. Explicit `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` was verified in loader debug output for the interpolation test; it selected NVIDIA GeForce RTX 4060. Interpolation test matched 932 pixels for wave32 and wave64 cases. No validation error/VUID was present in that smoke output. This was not a full-rendering or app-start test.
-- Vulkan setup: `vulkaninfo --summary` detected NVIDIA RTX 4060, driver 617.14; `spirv-val.exe --version` passed.
-- Debug build: NOT RUN.
-- Homebrew, GTA VI, game runtime, and first rendered frame: NOT TESTED. The 37 skipped tests are reported as skipped; none are counted as passes.
+## Earlier full-suite baseline (older AnyPS5 revision)
+
+- Full CTest: 6,651 registered tests; 6,492 passed, 122 failed, 37 skipped. This is not the current merged-source result and was not rerun after merging `main`.
+- Failures included unavailable/quarantined AGC executables and independent upstream checks. Earlier full build produced 413 PRX artifacts but was not clean; Windows Security quarantined some generated AGC executables before post-link `objcopy`.
+- Earlier three Vulkan validation cases (`agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`, `guest_video_out_vblank_status`) passed on NVIDIA RTX 4060. The two AGC cases have now been reconfirmed on the merged source with validation enabled; video-out case was not repeated.
+- `guest_exec_variadic` passed on the prior isolated branch before this merge; it was not repeated in this targeted run.
+
+## Limits
+
+- Additional local Release confirmation on the same pinned commit: rebuilt the scalar buffer, packed image, DS/GDS SRC2 test targets in `D:\a5adv3`; CTest passed 14/14 across `agc_driver_gcn_scalar_buffer_base`, `agc_driver_gds_m0_base`, `agc_driver_lds_src2`, `agc_driver_sbuffer_atomic_add`, `agc_driver_sbuffer_store`, `agc_driver_scalar_buffer_runtime_word3`, the four packed-image store/guard/rejection/mip cases, `ds_src2_u64`, `image_pck_n`, and scalar buffer IR tests. This is a repeatable subset confirmation, not additional instruction coverage beyond those cases.
+
+Build success, unit-test success, and application runtime compatibility are separate claims. Full build, full CTest on the merged source, Debug, guest executable loading, homebrew, GTA VI, and first rendered frame remain unverified.
