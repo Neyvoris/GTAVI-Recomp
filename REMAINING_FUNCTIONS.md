@@ -1,6 +1,6 @@
 # Remaining functions and implementation work
 
-The latest pushed AnyPS5 source is commit `7d69cb0e68` on the fork branch, based on merge `dd95a75a55`. Current `tools/progress.py` reports 18,609/39,467 library inventory entries and 127 shader throw sites. The older selected-library subset scan below has a narrower scope.
+The latest pushed AnyPS5 source is commit `2e9fce90f5` on the fork branch, based on merge `dd95a75a55`. Current `tools/progress.py` reports 18,609/39,467 library inventory entries and 126 shader throw sites. The older selected-library subset scan below has a narrower scope.
 
 | Library / area | Current metric | Remaining by this metric |
 |---|---:|---:|
@@ -14,7 +14,7 @@ The latest pushed AnyPS5 source is commit `7d69cb0e68` on the fork branch, based
 | `libkernel` | 754 / 800 | 46 |
 | `libc` | 1,874 / 1,882 | 8 |
 | gfx1013 reference forms | 1,557 / 1,560 | 3 |
-| Shader throw sites | 127 | 127 still marked unsupported |
+| Shader throw sites | 126 | 126 still marked unsupported |
 
 The scanned shader forms are 1,460/1,460 decoded. The instruction-form inventory, decoded-form inventory, and throw-site count have different denominators and must not be added or treated as interchangeable.
 
@@ -26,4 +26,4 @@ Implemented gfx1013 slices include DS_SRC2 64-bit operations; three scalar buffe
 
 ## Latest implemented shader slice
 
-PCK2/PCK4 image stores and mip stores have a verified, bounded path; 15 DS_SRC2 64-bit LDS forms and GDS ADD U32/U64 pass focused 32-lane GPU checks; scalar buffer/raw stores and atomics pass their exact GPU checks. The gfx1013 reference inventory is 1,557/1,560. The 127 unsupported throw-site count is a static source-site count, not unresolved opcodes or runtime failures. Scalar scratch stores, unmeasured image layouts, other GDS DS_SRC2 opcodes, and floating edge cases remain unsupported or unverified.
+PCK2/PCK4 image stores and mip stores have a verified, bounded path; 15 DS_SRC2 64-bit LDS forms and GDS ADD U32/U64 pass focused 32-lane GPU checks; scalar buffer/raw stores and atomics pass their exact GPU checks. The gfx1013 reference inventory is 1,557/1,560; directed f32 rounding is supported for `v_interp_p1ll_f16` and `v_interp_p1lv_f16`. The 126 unsupported throw-site count is a static source-site count, not unresolved opcodes or runtime failures. Scalar scratch stores, unmeasured image layouts, other GDS DS_SRC2 opcodes, and floating edge cases remain unsupported or unverified.

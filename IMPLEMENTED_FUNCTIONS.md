@@ -20,6 +20,12 @@
 - Regression tests: `core/libs/tests/ImagePckN.cpp` (`image_pck_n`) checks all four store opcode forms lower to `ImageWrite` and preserve memory metadata. `core/libs/prx/libSceAgcDriver/tests/execution/ImagePckN.cpp` (`agc_driver_image_pck_n`) executes PCK2/PCK4 stores on NVIDIA RTX 4060 and checks byte-accurate results. Both passed in Release and Debug; the Release Vulkan test passed with `VK_LAYER_KHRONOS_validation` enabled.
 - This adds four opcode forms to the implemented behavior; it does not resolve all gfx1013 reference forms or all recompiler throw sites.
 
+## Directed f32 rounding for f16 interpolation
+
+- `Translation/src/AttributeInstructions.cpp::interpolationModeF16` carries FLOAT_MODE f32 rounding (`nearest-even`, `+infinity`, `-infinity`, `zero`) for `v_interp_p1ll_f16` and `v_interp_p1lv_f16`, whose results are f32. SPIR-V backends use exact directed rounding, preserve directed signed-zero behavior, and select infinity versus max finite correctly on overflow.
+- `InterpolationModes.cpp::RunDirectedF32` checks positive/negative half-ULP ties, the least subnormal midpoint, and finite-input overflow for both instruction forms across all four rounding modes and integer/Float64 backends where available. Release rebuild passed; `agc_driver_interpolation_f16`, `agc_driver_interpolation_modes`, and `agc_driver_pixel_exec_interpolation` passed 3/3 on RTX 4060.
+- AnyPS5 commit `2e9fce90f53ba81057ceea786728d7247b5374f4` is pushed to `Neyvoris/AnyPS5:codex/gtavi-compatibility-advance`. This does not establish general arithmetic-rounding completeness or PS5 application compatibility.
+
 ## Previous isolated libkernel work
 
 - `execl`, `execle`, and `execlp` variadic entry points are present in `third_party/AnyPS5/core/libs/prx/libkernel/System/src/Process.cpp`, declarations in `Api.hpp`, from public AnyPS5 commit `65eaf885f894447d9782f439dcd93e07cdd1cffc` (included in the branch history before the current merge).

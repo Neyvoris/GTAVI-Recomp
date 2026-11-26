@@ -5,7 +5,7 @@ Updated: 2026-11-26.
 ## Tested source
 
 - Parent: `codex/windows-x64-preflight`, working copy `D:\GTAVI-Recomp-dev-d`.
-- AnyPS5: `third_party/AnyPS5`, branch `codex/gtavi-compatibility-advance`, latest tested/pushed commit `126087d9ea` (`feat(shader): translate scalar address atomics`), based on merge `dd95a75a55`. Upstream repositories were not modified.
+- AnyPS5: `third_party/AnyPS5`, branch `codex/gtavi-compatibility-advance`, latest tested/pushed commit `2e9fce90f5` (`feat(shader): honor directed f32 interpolation rounding`), based on merge `dd95a75a55`. Upstream repositories were not modified.
 - Build tree: `D:\a5adv3`.
 
 ## Windows x64 Release targeted build
@@ -28,6 +28,8 @@ Updated: 2026-11-26.
 - A complete Release `ninja` build was attempted (`11,086` planned operations). It stopped at the AGC tool post-link step for `agc_shader_replay.exe`: Windows Security identifies it as `Trojan:Win64/ShellCode.MKA!MTB` (ThreatID `2147960850`) and blocks reads, so GNU `objcopy` reports `Invalid argument`. The alert is reproduced in Defender's read-only threat history. No protection settings were changed. At the stop, all 413 patched `.prx` output paths existed; 408 had been written during this build attempt and five predated it. The complete all-target build did not finish.
 
 ## Reproduction
+
+- Directed f32 interpolation follow-up: Release Ninja target rebuild succeeded in `D:\a5adv3` for `agc_driver_interpolation_f16_tests`, `agc_driver_interpolation_modes_tests`, and `agc_driver_pixel_exec_interpolation_tests`; all three CTest cases passed. This was a focused build, not a full-runtime rebuild.
 
 - 2026-11-26 refresh: `ninja scalar_buffer_atomic_add_tests agc_driver_sbuffer_atomic_add_tests` completed successfully in `D:\a5adv3` after rebuilding 205 incremental steps (including kernel, shader recompiler, and AGC PRX). A GCC 16 STL `-Wstringop-overread` warning appeared during the existing `std::vector<std::byte>` comparison code; no build error resulted. `ctest --output-on-failure -R "^(scalar_buffer_atomic_add|agc_driver_sbuffer_atomic_add)$"` passed 2/2.
 - 2026-11-26 GDS SRC2 follow-up: Release shader recompiler/AGC PRX and `agc_driver_gds_m0_base_tests` rebuilt successfully in `D:\a5adv3`; `agc_driver_lds_src2_tests` and `ds_src2_u64_tests` built too. Associated CTest cases passed 3/3. Use configured Ninja 1.13.2; the older CodeBlocks Ninja binary is incompatible with this build tree's log format.

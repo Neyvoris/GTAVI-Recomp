@@ -2,12 +2,14 @@
 
 ## 2026-11-26 follow-up
 
+- Directed f32 interpolation on AnyPS5 `2e9fce90f5`: Release builds succeeded for `agc_driver_interpolation_f16_tests`, `agc_driver_interpolation_modes_tests`, and `agc_driver_pixel_exec_interpolation_tests` in `D:\a5adv3`; CTest passed 3/3. RTX 4060 checks covered ties, subnormal midpoint, overflow, four rounding modes, both instruction forms, and available integer/Float64 backends. This is focused evidence, not a full-suite or validation-layer run.
+
 - Fresh Release incremental build of `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` passed in `D:\a5adv3`, rebuilding shader recompiler, `libkernel.prx`, and `libSceAgcDriver.prx` dependencies.
 - Fresh focused CTest run passed 2/2: `agc_driver_sbuffer_atomic_add` (RTX 4060 Vulkan execution) and `scalar_buffer_atomic_add` (IR/decoder checks). These reconfirm the pushed `126087d9ea` scalar buffer/address atomic implementations; this run does not extend coverage to scratch stores or enable a newly confirmed Vulkan validation-layer run.
 - A `ctest -N` inspection found 7,114 registered tests in the existing build tree; most test executables are absent, so this was not a full-suite test run.
 - GDS DS_SRC2 follow-up on AnyPS5 commit `7d69cb0e68`: PASS 3/3 (`agc_driver_gds_m0_base`, `agc_driver_lds_src2`, `ds_src2_u64`). New RTX 4060 tests verify 32-lane GDS `ds_add_src2_u32` and `_u64` load from the secondary offset, update the M0-based target, and preserve neighboring words. A dedicated rerun confirmed the Khronos validation layer was loaded and produced no VUID or validation errors.
 
-Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `126087d9ea`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
+Updated: 2026-11-26. The current regression batch is on pushed AnyPS5 commit `2e9fce90f5`; prior results are on merge `dd95a75a55`, except where explicitly labeled earlier baseline.
 
 ## Targeted tests on merged source
 
