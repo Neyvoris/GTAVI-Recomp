@@ -6,7 +6,7 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 
 - Integrated public `Neyvoris/AnyPS5` `main` into the isolated AnyPS5 fork branch. Merge commit: `dd95a75a55` (full source commit recorded in Git). The upstream repository was not modified and nothing was pushed.
 - Windows x64 Release configuration with MinGW-w64 GCC 16.1, CMake/Ninja, Vulkan SDK and SPIRV-Tools completed in `D:\a5adv3`. The selected runtime targets built, including `shader_recompiler_agc_driver`, `libSceAgcDriver.prx`, `libSceSystemService.prx`, `libSceUserService.prx`, `libSceSaveData.prx`, `libSceAppContent.prx`, and `libSceSysmodule.prx`.
-- 48 focused tests passed: three shader recompiler tests, 43 SystemService/UserService/Sysmodule tests, and two AGC Vulkan execution tests. The two AGC tests also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- 92 focused Release tests passed: three shader recompiler tests, 43 SystemService/UserService/Sysmodule tests, nine AppContent tests, 35 SaveData tests, and two AGC Vulkan execution tests. The two AGC tests also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled. The three shader tests also passed in Debug.
 - This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Debug configuration, homebrew execution, GTA VI, and first-frame rendering were not tested.
 
 ## Coverage snapshot

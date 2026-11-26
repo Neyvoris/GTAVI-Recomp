@@ -12,7 +12,7 @@ Updated: 2026-11-26.
 
 - Compiler: MSYS2 UCRT64 MinGW-w64 GCC/G++ 16.1.0, target x86_64-w64-mingw32.
 - CMake 4.4.4, Ninja, Vulkan SDK 1.4.363.0, SPIRV-Tools enabled; bundled dependencies; full-runtime configuration (`ANYPS5_RELINKER_ONLY=OFF`), tests on, `SKIP_SPIRV_TOOLS_INSTALL=ON`.
-- **PASS for requested targets:** `shader_recompiler_agc_driver`; PRX libraries `libSceAgcDriver`, `libSceSystemService`, `libSceUserService`, `libSceSaveData`, `libSceAppContent`, and `libSceSysmodule`; and the test binaries listed in `TEST_RESULTS.md`.
+- **PASS for requested targets:** `shader_recompiler_agc_driver`; PRX libraries `libSceAgcDriver`, `libSceSystemService`, `libSceUserService`, `libSceSaveData`, `libSceAppContent`, and `libSceSysmodule`; and the test binaries listed in `TEST_RESULTS.md`. Focused AppContent and SaveData suites were built and passed after the initial service/shader test batch.
 - This was a targeted build, not a clean all-target build. Third-party glslang/STL warnings appeared, but selected targets linked successfully.
 - Debug configuration succeeded at `D:\a5advdbg`. The same shader recompiler/AGC target, six selected PRX libraries, and three shader test executables built successfully; rerunning Ninja confirmed exit code 0. Debug CTest for the three shader tests passed 3/3. This is still targeted, not a full Debug build.
 

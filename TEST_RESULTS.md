@@ -6,9 +6,11 @@ Updated: 2026-11-26. Results below were observed on AnyPS5 merge `dd95a75a55`, e
 
 - Shader recompiler: PASS 3/3 — `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, `scalar_scratch_load`. The scratch test confirms the expected unsupported behavior and decoder coverage; it does not verify a working scratch-load translation.
 - System/service tests: PASS 43/43 — `guest_system_service|guest_sysmodule|guest_user_service`, including bounded path/profile cases, title metadata, lifecycle, login-list, and invalid sysmodule IDs.
+- AppContent: PASS 9/9 — `guest_appcontent`, including download quota boundaries, entitlement parsing, license responses, and mount alias collisions.
+- SaveData: PASS 35/35 — `guest_savedata`, including bounds, backup/recovery, search/size/delete/convert, mount status, event callbacks, host-space handling, and icon round trips.
 - AGC/Vulkan execution: PASS 2/2 — `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`.
 - Repeated the two AGC tests with `VK_LAYER_KHRONOS_validation` set in the process environment: PASS 2/2.
-- Aggregate selected result: 48/48 tests passed. No homebrew/title runtime tests were run.
+- Aggregate selected Release result: 92/92 tests passed. No homebrew/title runtime tests were run.
 - Debug configuration: selected recompiler/AGC and six PRX targets built; shader trio `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, and `scalar_scratch_load` passed 3/3. Full Debug CTest was not run.
 
 ## Earlier full-suite baseline (older AnyPS5 revision)
