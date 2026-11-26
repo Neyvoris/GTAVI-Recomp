@@ -16,6 +16,7 @@ Updated: 2026-11-26. The current regression batch was observed on AnyPS5 commit 
 - AGC/Vulkan execution: PASS 2/2 — `agc_driver_pipelined_fill`, `agc_driver_pixel_exec_interpolation`.
 - Repeated the two AGC tests with `VK_LAYER_KHRONOS_validation` set in the process environment: PASS 2/2.
 - Aggregate selected Release result: 92/92 tests passed. No homebrew/title runtime tests were run.
+- AGC storage write-back follow-up on restored source: recorder target build passed; `agc_storage_write_back` and `agc_storage_write_back_scratch` passed 2/2 using the agent's CMake/CTest installation. The opt-in `agc_storage_write_back_host_retile` route-count assertion still fails for `linear 240x135, 2 mips`: `linearRows` rejects tail mips before host import (`0 direct, 0 host-blocked, 1 other`). Texel, row-padding, and outside-byte checks passed via scratch fallback in the diagnostic run; only the fast-path assertion failed. This does not establish direct-retile correctness for tail-mip layouts, so no guard or expectation was changed. The root shell used for this follow-up did not have `ctest`/CMake available for independent rerun.
 - Debug configuration: selected recompiler/AGC and six PRX targets built; shader trio `shader_image_overwrite_proof`, `shader_memory_decoder_tolerance`, and `scalar_scratch_load` passed 3/3. Full Debug CTest was not run.
 
 ## Earlier full-suite baseline (older AnyPS5 revision)

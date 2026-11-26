@@ -1,6 +1,6 @@
 # Remaining functions and implementation work
 
-The tested AnyPS5 source is the fork branch at merge `dd95a75a55`. The current progress scan (`tools/progress.py`, restricted to the named libraries) reports:
+The tested AnyPS5 source is commit `12d719db7f85b8eb5c0daec15429515e316674bb` on the fork branch, based on merge `dd95a75a55`. The current progress scan (`tools/progress.py`, restricted to the named libraries) reports:
 
 | Library / area | Current metric | Remaining by this metric |
 |---|---:|---:|
