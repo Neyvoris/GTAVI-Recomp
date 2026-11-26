@@ -5,7 +5,7 @@ Updated: 2026-11-26.
 ## Tested source
 
 - Parent: `codex/windows-x64-preflight`, working copy `D:\GTAVI-Recomp-dev-d`.
-- AnyPS5: `third_party/AnyPS5`, branch `codex/gtavi-compatibility-advance`, latest tested/pushed commit `45a0194afa` (`feat(shader): translate scalar address atomic add`), based on merge `dd95a75a55`. Upstream repositories were not modified.
+- AnyPS5: `third_party/AnyPS5`, branch `codex/gtavi-compatibility-advance`, latest tested/pushed commit `aacb4abb48` (`feat(shader): translate scalar address stores`), based on merge `dd95a75a55`. Upstream repositories were not modified.
 - Build tree: `D:\a5adv3`.
 
 ## Windows x64 Release targeted build
@@ -22,6 +22,7 @@ Updated: 2026-11-26.
 - After adding scalar buffer compare-swap DWORD/X2 decoding and translation, Release target rebuild `scalar_buffer_atomic_add_tests agc_driver_sbuffer_atomic_add_tests` succeeded in `D:\a5adv3`; focused IR and RTX 4060 Vulkan tests passed 2/2. This does not rebuild every runtime target.
 - After adding scalar buffer INC/DEC DWORD/X2 decoding and translation, the same Release targets rebuilt; the GPU and IR tests passed 2/2. The adjacent six-test regression batch passed 6/6 on commit `17f36dc3f6`.
 - After adding scalar-address `S_ATOMIC_ADD` DWORD/X2, Release targets `scalar_buffer_atomic_add_tests` and `agc_driver_sbuffer_atomic_add_tests` rebuilt successfully. RTX 4060 GPU+IR tests and the adjacent six-test regression batch passed (2/2 targeted and 6/6 regression) on commit `45a0194afa`.
+- After adding scalar raw-address `S_STORE_DWORD/X2/X4`, the same Release targets rebuilt; exact RTX 4060 GPU and IR checks passed, followed by the adjacent regression batch 6/6 on commit `aacb4abb48`. An initial raw pointer test faulted because no BDA mapping existed; the passing test registers the same memory through a normal buffer descriptor, matching runtime address-mapping requirements.
 - After the packed-store changes, the focused Debug `agc_driver_image_pck_n_tests` and `image_pck_n_tests` targets built and passed 2/2. C: had no free space for MinGW's default temporary output; setting `TMP`, `TEMP`, and `TMPDIR` to `D:\a5temp\mingw-temp` allowed this targeted build to complete. The full Debug build remains unverified.
 - A complete Release `ninja` build was attempted (`11,086` planned operations). It stopped at the AGC tool post-link step for `agc_shader_replay.exe`: Windows Security identifies it as `Trojan:Win64/ShellCode.MKA!MTB` (ThreatID `2147960850`) and blocks reads, so GNU `objcopy` reports `Invalid argument`. The alert is reproduced in Defender's read-only threat history. No protection settings were changed. At the stop, all 413 patched `.prx` output paths existed; 408 had been written during this build attempt and five predated it. The complete all-target build did not finish.
 
