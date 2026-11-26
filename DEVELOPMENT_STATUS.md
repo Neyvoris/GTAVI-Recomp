@@ -4,10 +4,12 @@ Updated: 2026-11-26. Parent branch: `codex/windows-x64-preflight`. AnyPS5 branch
 
 ## Current checkpoint
 
-- Integrated public `Neyvoris/AnyPS5` `main` into the isolated AnyPS5 fork branch. Merge commit: `dd95a75a55` (full source commit recorded in Git). The upstream repository was not modified and nothing was pushed.
+- Integrated public `Neyvoris/AnyPS5` `main` into the isolated AnyPS5 fork branch. Merge commit: `dd95a75a55`. The parent and AnyPS5 feature branches were pushed to the user's forks; upstream repositories were not modified.
+- Added and locally committed the verified MIMG packed-store implementation as AnyPS5 commit `12d719db7f85b8eb5c0daec15429515e316674bb` on `codex/gtavi-compatibility-advance`.
 - Windows x64 Release configuration with MinGW-w64 GCC 16.1, CMake/Ninja, Vulkan SDK and SPIRV-Tools completed in `D:\a5adv3`. The selected runtime targets built, including `shader_recompiler_agc_driver`, `libSceAgcDriver.prx`, `libSceSystemService.prx`, `libSceUserService.prx`, `libSceSaveData.prx`, `libSceAppContent.prx`, and `libSceSysmodule.prx`.
-- 92 focused Release tests passed: three shader recompiler tests, 43 SystemService/UserService/Sysmodule tests, nine AppContent tests, 35 SaveData tests, and two AGC Vulkan execution tests. The two AGC tests also passed with `VK_LAYER_KHRONOS_validation` explicitly enabled. The three shader tests also passed in Debug.
-- This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Debug configuration, homebrew execution, GTA VI, and first-frame rendering were not tested.
+- Implemented and GPU-verified MIMG `IMAGE_STORE_PCK2/PCK4` and mip variants for the measured 2D, single-dword, identity-swizzled R8/R16/RG8 subset; PCK4 is limited to R8. Coverage and boundaries are described in `IMPLEMENTED_FUNCTIONS.md`.
+- 96 focused Release tests passed on the current worktree, including shader, service, AppContent, SaveData, AGC, and PCK tests. The PCK GPU test and IR decoder test also passed in Debug. PCK execution passed with `VK_LAYER_KHRONOS_validation` explicitly enabled.
+- This is a targeted build/test checkpoint, not a clean rebuild of every target or a full green CTest run. Homebrew execution, GTA VI, and first-frame rendering were not tested.
 
 ## Coverage snapshot
 
